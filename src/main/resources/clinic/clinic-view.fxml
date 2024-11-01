@@ -43,7 +43,7 @@
                          <ComboBox fx:id="providerCombo" prefWidth="120" promptText="Providers" GridPane.columnIndex="1" GridPane.rowIndex="4" />
 
                          <!-- Load Providers Button -->
-                         <Button fx:id="loadProvidersButton" onAction = "#onLoadProvidersButtonClick" disable="false" text="Load Providers" GridPane.columnIndex="2" GridPane.rowIndex="4" />
+                         <Button fx:id="loadProvidersButton" disable="false" onAction="#onLoadProvidersButtonClick" text="Load Providers" GridPane.columnIndex="2" GridPane.rowIndex="4" />
 
                          <!-- Schedule, Cancel, and Clear Buttons -->
                          <HBox alignment="CENTER" spacing="10" GridPane.columnIndex="1" GridPane.rowIndex="5">
@@ -78,11 +78,11 @@
        </Tab>
          <Tab text="Clinic Locations">
             <content>
-               <TableView fx:id = "table" prefHeight="200.0" prefWidth="200.0">
+               <TableView fx:id="table" prefHeight="200.0" prefWidth="200.0">
                  <columns>
-                   <TableColumn fx:id = "cityColumn" prefWidth="75.0" text="City" />
-                   <TableColumn fx:id = "countyColumn" prefWidth="75.0" text="County" />
-                     <TableColumn fx:id = "zipColumn" prefWidth="75.0" text="Zip" />
+                   <TableColumn fx:id="cityColumn" prefWidth="75.0" text="City" />
+                   <TableColumn fx:id="countyColumn" prefWidth="75.0" text="County" />
+                     <TableColumn fx:id="zipColumn" prefWidth="75.0" text="Zip" />
                  </columns>
                </TableView>
             </content></Tab>
@@ -96,5 +96,5 @@
          <Insets />
       </VBox.margin>
    </TabPane>
-   <TextArea prefHeight="204.0" prefWidth="605.0" style="-fx-background-color: red;" />
+   <TextArea fx:id="textArea" prefHeight="204.0" prefWidth="605.0" style="-fx-background-color: red;" />
 </VBox>
