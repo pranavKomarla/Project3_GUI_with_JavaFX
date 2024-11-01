@@ -32,15 +32,15 @@
                          <DatePicker fx:id="appointmentDateField" GridPane.columnIndex="1" GridPane.rowIndex="0" />
 
                          <Label text="Patient:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
-                         <TextField fx:id="patientField" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                         <TextField fx:id="visitDateField" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                         <TextField fx:id="patientFieldFirstName" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                         <TextField fx:id="patientFieldLastName" GridPane.columnIndex="1" GridPane.rowIndex="2" />
 
                          <HBox alignment="CENTER_LEFT" spacing="10" GridPane.columnIndex="1" GridPane.rowIndex="3">
                              <RadioButton fx:id="officeVisitRadio" text="Office Visit" />
                              <RadioButton fx:id="imagingServiceRadio" text="Imaging Service" />
                          </HBox>
 
-                         <ComboBox fx:id="timeslotCombo" prefWidth="120" promptText="timeslot" GridPane.columnIndex="0" GridPane.rowIndex="4" />
+                         <ComboBox fx:id="timeslotCombo" prefWidth="120" promptText="Timeslot" GridPane.columnIndex="0" GridPane.rowIndex="4" />
                          <ComboBox fx:id="providersCombo" prefWidth="120" promptText="Providers" GridPane.columnIndex="1" GridPane.rowIndex="4" />
 
                          <!-- Load Providers Button -->
@@ -48,7 +48,7 @@
 
                          <!-- Schedule, Cancel, and Clear Buttons -->
                          <HBox alignment="CENTER" spacing="10" GridPane.columnIndex="1" GridPane.rowIndex="5">
-                             <Button fx:id="scheduleButton" text="Schedule" />
+                             <Button fx:id="scheduleButton" onAction="#CreateAppointment" text="Schedule" />
                              <Button fx:id="cancelButton" text="Cancel" />
                              <Button fx:id="clearButton" text="Clear" />
                          </HBox>

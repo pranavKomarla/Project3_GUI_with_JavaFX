@@ -7,6 +7,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import org.w3c.dom.Text;
 import util.List;
@@ -20,8 +21,6 @@ import java.util.Iterator;
 import java.util.Scanner;
 
 public class ClinicManagerController {
-
-
 
 
     private List<Appointment> listAppointments;
@@ -49,6 +48,19 @@ public class ClinicManagerController {
     @FXML
     private ComboBox<String> timeslotCombo, providersCombo;
 
+    @FXML
+    private DatePicker appointmentDateField;
+
+    @FXML
+    private TextField patientFieldFirstName, patientFieldLastName;
+
+    @FXML
+    private RadioButton officeVisitRadio, imagingServiceRadio;
+
+    @FXML
+    private ToggleGroup group;
+
+
 
 
 
@@ -75,8 +87,10 @@ public class ClinicManagerController {
         npis = new List<String>();
         medicalRecord = new List<Patient>();
 
+        group = new ToggleGroup();
 
-
+        officeVisitRadio.setToggleGroup(group);
+        imagingServiceRadio.setToggleGroup(group);
 
     }
 
@@ -104,6 +118,13 @@ public class ClinicManagerController {
     protected void onLoadProvidersButtonClick() {
         //welcomeText.setText("Welcome to JavaFX Application!");
         loadProviders();
+    }
+
+    @FXML
+    private void CreateAppointment() {
+        if(appointmentDateField.getValue() == null || patientFieldFirstName.getText() == null || patientFieldLastName.getText() == null || ((RadioButton) group.getSelectedToggle()) == null) {
+            System.out.println("Make sure to provide inputs to all fields");
+        }
     }
 
 
