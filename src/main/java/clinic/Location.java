@@ -70,4 +70,14 @@ public enum Location {
     public String getZip() {
         return zip;
     }
+
+
+    /**
+     * Returns the city name of the location.
+     *
+     * @return the city name of the location
+     */
+    public String getCity() {
+        return this.name();
+    }
 }
