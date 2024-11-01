@@ -3,15 +3,14 @@ package clinic;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.cell.PropertyValueFactory;
 import org.w3c.dom.Text;
 import util.List;
 import util.Sort;
-import javafx.scene.control.TextArea;
 
 import java.awt.*;
 import java.awt.event.MouseEvent;
@@ -25,10 +24,10 @@ public class ClinicManagerController {
 
 
 
-    private util.List<Appointment> listAppointments;
-    private util.List<Provider> listProviders;
-    private util.List<Technician> technicians;
-    private util.List<String> npis;
+    private List<Appointment> listAppointments;
+    private List<Provider> listProviders;
+    private List<Technician> technicians;
+    private List<String> npis;
     private List<Patient> medicalRecord;
     Technician start;
     Technician current;
@@ -45,7 +44,10 @@ public class ClinicManagerController {
     private Button loadProvidersButton;
 
     @FXML
-    public TextArea textArea;
+    private TextArea textArea;
+
+    @FXML
+    private ComboBox<String> timeslotCombo, providersCombo;
 
 
 
@@ -65,6 +67,7 @@ public class ClinicManagerController {
 
         textArea.setStyle("-fx-text-fill: red;");
         textArea.setText("output area");
+        initializeTimeslotAndProviders();
 
         listAppointments = new List<Appointment>();
         listProviders = new List<Provider>();
@@ -73,6 +76,25 @@ public class ClinicManagerController {
         medicalRecord = new List<Patient>();
 
 
+
+
+    }
+
+    private void initializeTimeslotAndProviders() {
+        timeslotCombo.getItems().addAll(
+            new Timeslot(9, 0).toString(),
+            new Timeslot(9, 30).toString(),
+            new Timeslot(10, 0).toString(),
+            new Timeslot(10, 30).toString(),
+            new Timeslot(11, 0).toString(),
+            new Timeslot(11, 30).toString(),
+            new Timeslot(14, 0).toString(),
+            new Timeslot(14, 30).toString(),
+            new Timeslot(15, 0).toString(),
+            new Timeslot(15, 30).toString(),
+            new Timeslot(16, 0).toString(),
+            new Timeslot(16, 30).toString()
+        );
 
 
     }
@@ -124,6 +146,13 @@ public class ClinicManagerController {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
+
+        // Add all the providers to the combobox
+
+        for(int i = 0; i < listProviders.size(); i++) {
+            providersCombo.getItems().add(listProviders.get(i).getProfile().getFname() + " " + listProviders.get(i).getProfile().getLname());
+        }
+
     }
 
     private void printingProvidersAndTechs(List<Provider> listProviders) {
@@ -173,6 +202,38 @@ public class ClinicManagerController {
         System.out.println("\n");
 
 
+    }
+
+    private Timeslot getCurrentTimeslot(String timeslotStr) {
+        switch (Integer.parseInt(timeslotStr)) {
+            case 1:
+                return new Timeslot(9, 0);
+            case 2:
+                return new Timeslot(9, 30);
+            case 3:
+                return new Timeslot(10, 0);
+            case 4:
+                return new Timeslot(10, 30);
+            case 5:
+                return new Timeslot(11, 0);
+            case 6:
+                return new Timeslot(11, 30);
+            case 7:
+                return new Timeslot(14, 0);
+            case 8:
+                return new Timeslot(14, 30);
+            case 9:
+                return new Timeslot(15, 0);
+            case 10:
+                return new Timeslot(15, 30);
+            case 11:
+                return new Timeslot(16, 0);
+            case 12:
+                return new Timeslot(16, 30);
+            default:
+                System.out.println("not a valid timeslot");
+                return null;
+        }
     }
 
 

@@ -3,6 +3,7 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.RadioButton?>
 <?import javafx.scene.control.Tab?>
@@ -28,7 +29,7 @@
                   <children>
                      <GridPane prefHeight="331.0" prefWidth="605.0" style="-fx-border-color: blue;">
                          <Label text="Appointment Date:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
-                         <TextField fx:id="appointmentDateField" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+                         <DatePicker fx:id="appointmentDateField" GridPane.columnIndex="1" GridPane.rowIndex="0" />
 
                          <Label text="Patient:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
                          <TextField fx:id="patientField" GridPane.columnIndex="1" GridPane.rowIndex="1" />
@@ -40,7 +41,7 @@
                          </HBox>
 
                          <ComboBox fx:id="timeslotCombo" prefWidth="120" promptText="timeslot" GridPane.columnIndex="0" GridPane.rowIndex="4" />
-                         <ComboBox fx:id="providerCombo" prefWidth="120" promptText="Providers" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                         <ComboBox fx:id="providersCombo" prefWidth="120" promptText="Providers" GridPane.columnIndex="1" GridPane.rowIndex="4" />
 
                          <!-- Load Providers Button -->
                          <Button fx:id="loadProvidersButton" disable="false" onAction="#onLoadProvidersButtonClick" text="Load Providers" GridPane.columnIndex="2" GridPane.rowIndex="4" />
