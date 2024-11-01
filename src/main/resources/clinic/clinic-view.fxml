@@ -34,20 +34,28 @@
                          <Label text="Patient:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
                          <TextField fx:id="patientFieldFirstName" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                          <TextField fx:id="patientFieldLastName" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                         <DatePicker fx:id="dobDatePicker" GridPane.columnIndex="1" GridPane.rowIndex="3" />
 
-                         <HBox alignment="CENTER_LEFT" spacing="10" GridPane.columnIndex="1" GridPane.rowIndex="3">
+                         <HBox alignment="CENTER_LEFT" spacing="10" GridPane.columnIndex="1" GridPane.rowIndex="4">
                              <RadioButton fx:id="officeVisitRadio" text="Office Visit" />
                              <RadioButton fx:id="imagingServiceRadio" text="Imaging Service" />
                          </HBox>
 
-                         <ComboBox fx:id="timeslotCombo" prefWidth="120" promptText="Timeslot" GridPane.columnIndex="0" GridPane.rowIndex="4" />
-                         <ComboBox fx:id="providersCombo" prefWidth="120" promptText="Providers" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                         <ComboBox fx:id="timeslotCombo" prefWidth="120" promptText="Timeslot" GridPane.columnIndex="0" GridPane.rowIndex="5" />
+                         <HBox spacing="5.0" GridPane.columnIndex="1" GridPane.rowIndex="5">
+                             <ComboBox fx:id="providersCombo" prefWidth="100" promptText="Providers" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+                             <ComboBox fx:id="serviceCombo" prefWidth="90" promptText="Service" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+                           <GridPane.margin>
+                              <Insets left="5.0" />
+                           </GridPane.margin>
+                         </HBox>
+
 
                          <!-- Load Providers Button -->
-                         <Button fx:id="loadProvidersButton" disable="false" onAction="#onLoadProvidersButtonClick" text="Load Providers" GridPane.columnIndex="2" GridPane.rowIndex="4" />
+                         <Button fx:id="loadProvidersButton" disable="false" onAction="#onLoadProvidersButtonClick" text="Load Providers" GridPane.columnIndex="2" GridPane.rowIndex="5" />
 
                          <!-- Schedule, Cancel, and Clear Buttons -->
-                         <HBox alignment="CENTER" spacing="10" GridPane.columnIndex="1" GridPane.rowIndex="5">
+                         <HBox alignment="CENTER" spacing="10" GridPane.columnIndex="1" GridPane.rowIndex="6">
                              <Button fx:id="scheduleButton" onAction="#CreateAppointment" text="Schedule" />
                              <Button fx:id="cancelButton" text="Cancel" />
                              <Button fx:id="clearButton" text="Clear" />
@@ -58,6 +66,7 @@
                            <ColumnConstraints />
                         </columnConstraints>
                         <rowConstraints>
+                           <RowConstraints />
                            <RowConstraints />
                            <RowConstraints />
                            <RowConstraints />

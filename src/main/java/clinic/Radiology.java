@@ -10,4 +10,10 @@ public enum Radiology {
     XRAY;
 
 
+
+    private String getRoom() {
+        return this.name();
+    }
 }
+
+

@@ -23,6 +23,7 @@ import java.util.Scanner;
 public class ClinicManagerController {
 
 
+
     private List<Appointment> listAppointments;
     private List<Provider> listProviders;
     private List<Technician> technicians;
@@ -49,7 +50,10 @@ public class ClinicManagerController {
     private ComboBox<String> timeslotCombo, providersCombo;
 
     @FXML
-    private DatePicker appointmentDateField;
+    private ComboBox<Radiology> serviceCombo;
+
+    @FXML
+    private DatePicker appointmentDateField, dobDatePicker;
 
     @FXML
     private TextField patientFieldFirstName, patientFieldLastName;
@@ -92,7 +96,11 @@ public class ClinicManagerController {
         officeVisitRadio.setToggleGroup(group);
         imagingServiceRadio.setToggleGroup(group);
 
+        serviceCombo.getItems().addAll(Radiology.values());
+
     }
+
+
 
     private void initializeTimeslotAndProviders() {
         timeslotCombo.getItems().addAll(
@@ -121,10 +129,60 @@ public class ClinicManagerController {
     }
 
     @FXML
-    private void CreateAppointment() {
+    private boolean CreateAppointment() {
         if(appointmentDateField.getValue() == null || patientFieldFirstName.getText() == null || patientFieldLastName.getText() == null || ((RadioButton) group.getSelectedToggle()) == null) {
             System.out.println("Make sure to provide inputs to all fields");
+            return false;
+        } else {
+            String command = "";
+            if(((RadioButton) group.getSelectedToggle()).getText().equals("Office Visit")) {
+                command += "D,";
+                String dateGiven = appointmentDateField.getValue().toString();
+                String[] dateArray = dateGiven.split("-");
+                String date = dateArray[1] + "/" + dateArray[2] + "/" + dateArray[0];
+
+                command += date + ",";
+                command += getCurrentTimeslotNumber(timeslotCombo.getValue()) + ",";
+                command += patientFieldFirstName.getText() + ",";
+                command += patientFieldLastName.getText() + ",";
+
+                String dobGiven = dobDatePicker.getValue().toString();
+                String[] dobArray = dateGiven.split("-");
+                String dob = dobArray[1] + "/" + dobArray[2] + "/" + dobArray[0];
+
+                command += dob + ",";
+                command += getDoctorNpi(providersCombo.getValue().toString());
+            } else {
+                command += "T,";
+                String dateGiven = appointmentDateField.getValue().toString();
+                String[] dateArray = dateGiven.split("-");
+                String date = dateArray[1] + "/" + dateArray[2] + "/" + dateArray[0];
+
+                command += date + ",";
+                command += getCurrentTimeslotNumber(timeslotCombo.getValue()) + ",";
+                command += patientFieldFirstName.getText() + ",";
+                command += patientFieldLastName.getText() + ",";
+
+                String dobGiven = dobDatePicker.getValue().toString();
+                String[] dobArray = dateGiven.split("-");
+                String dob = dobArray[1] + "/" + dobArray[2] + "/" + dobArray[0];
+
+                command += dob + ",";
+
+
+
+
+            }
+
+
+
+
+
+
+
         }
+
+        return true;
     }
 
 
@@ -183,6 +241,7 @@ public class ClinicManagerController {
         textArea.setText("Providers loaded to the list. \n");
 
         for(int i = 0; i < listProviders.size(); i++) {
+            System.out.println(listProviders.get(i).toString());
             textArea.appendText(listProviders.get(i).toString() + "\n");
 
         }
@@ -254,6 +313,65 @@ public class ClinicManagerController {
             default:
                 System.out.println("not a valid timeslot");
                 return null;
+        }
+    }
+
+    private int getCurrentTimeslotNumber(String timeslot) {
+        if (timeslot.equals("9:00 AM")) {
+            return 1;
+        } else if (timeslot.equals("9:30 AM")) {
+            return 2;
+        } else if (timeslot.equals("10:00 AM")) {
+            return 3;
+        } else if (timeslot.equals("10:30 AM")) {
+            return 4;
+        } else if (timeslot.equals("11:00 AM")) {
+            return 5;
+        } else if (timeslot.equals("11:30 AM")) {
+            return 6;
+        } else if (timeslot.equals("2:00 PM")) {
+            return 7;
+        } else if (timeslot.equals("2:30 PM")) {
+            return 8;
+        } else if (timeslot.equals("3:00 PM")) {
+            return 9;
+        } else if (timeslot.equals("3:30 PM")) {
+            return 10;
+        } else if (timeslot.equals("4:00 PM")) {
+            return 11;
+        } else if (timeslot.equals("4:30 PM")) {
+            return 12;
+        } else {
+            return -1;
+        }
+
+    }
+
+    public int getDoctorNpi(String doctor) {
+        switch (doctor) {
+            case "ANDREW PATEL":
+                return 1;
+            case "RACHAEL LIM":
+                return 23;
+            case "MONICA ZIMNES":
+                return 11;
+            case "JOHN HARPER":
+                return 32;
+            case "TOM KAUR":
+                return 54;
+            case "ERIC TAYLOR":
+                return 91;
+            case "BEN RAMESH":
+                return 39;
+            case "JUSTIN CERAVOLO":
+                return 9;
+            case "GARY JOHNSON":
+                return 85;
+            case "BEN JERRY":
+                return 77;
+            default:
+                System.out.println("Name not found");
+                return -1; // Use -1 or any other indicator for "Name not found"
         }
     }
 
