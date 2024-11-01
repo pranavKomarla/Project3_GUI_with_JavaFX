@@ -10,7 +10,7 @@ public class ClinicManagerMain extends Application {
     public void start(Stage stage) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(ClinicManagerMain.class.getResource("/clinic/clinic-view.fxml"));
         Scene scene = new Scene(fxmlLoader.load());
-        stage.setTitle("Hello!");
+        stage.setTitle("Project 3");
         stage.setScene(scene);
         stage.show();
     }
