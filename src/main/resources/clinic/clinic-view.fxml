@@ -1,35 +1,76 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TextArea?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox prefHeight="527.0" prefWidth="605.0" spacing="20.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/23.0.1" fx:controller="clinic.ClinicManagerController">
-   <TabPane prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE">
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<VBox prefHeight="579.0" prefWidth="605.0" spacing="20.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="clinic.ClinicManagerController">
+   <TabPane prefHeight="356.0" prefWidth="605.0" tabClosingPolicy="UNAVAILABLE">
      <tabs>
-       <Tab text="Untitled Tab 1">
-         <content>
-           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+       <Tab text="Schedule / Cancel">
+            <content>
+
+                <VBox prefHeight="200.0" prefWidth="100.0">
                   <children>
-                      <Button layoutX="76.0" layoutY="49.0" onAction="#onHelloButtonClick" text="Hello!" />
-                  
-                      <Label fx:id="welcomeText" layoutX="178.0" layoutY="45.0" />
-                  </children>
-               </AnchorPane>
-         </content>
+                     <GridPane prefHeight="331.0" prefWidth="605.0" style="-fx-border-color: blue;">
+                         <Label text="Appointment Date:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+                         <TextField fx:id="appointmentDateField" GridPane.rowIndex="0" GridPane.columnIndex="1" />
+
+                         <Label text="Patient:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+                         <TextField fx:id="patientField" GridPane.rowIndex="1" GridPane.columnIndex="1" />
+                         <TextField fx:id="visitDateField" GridPane.rowIndex="2" GridPane.columnIndex="1" />
+
+                         <HBox spacing="10" alignment="CENTER_LEFT" GridPane.rowIndex="3" GridPane.columnIndex="1">
+                             <RadioButton text="Office Visit" fx:id="officeVisitRadio"/>
+                             <RadioButton text="Imaging Service" fx:id="imagingServiceRadio"/>
+                         </HBox>
+
+                         <ComboBox fx:id="timeslotCombo" prefWidth="120" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
+                         <ComboBox fx:id="providerCombo" prefWidth="120" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
+
+                         <!-- Load Providers Button -->
+                         <Button text="Load Providers" fx:id="loadProvidersButton" disable="false" GridPane.rowIndex="4" GridPane.columnIndex="2" />
+
+                         <!-- Schedule, Cancel, and Clear Buttons -->
+                         <HBox spacing="10" alignment="CENTER" GridPane.rowIndex="5" GridPane.columnIndex="1">
+                             <Button text="Schedule" fx:id="scheduleButton"/>
+                             <Button text="Cancel" fx:id="cancelButton"/>
+                             <Button text="Clear" fx:id="clearButton"/>
+                         </HBox>
+
+                     </GridPane>
+                  </children></VBox>
+
+
+            </content>
        </Tab>
-       <Tab text="Untitled Tab 2">
+       <Tab text="Reschedule">
          <content>
            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
          </content>
        </Tab>
+         <Tab text="Clinic Locations" />
+         <Tab text="Demo Menu">
+            <content>
+               <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+            </content>
+         </Tab>
      </tabs>
       <VBox.margin>
          <Insets />
       </VBox.margin>
    </TabPane>
+   <TextArea prefHeight="204.0" prefWidth="605.0" style="-fx-background-color: red;" />
 </VBox>
