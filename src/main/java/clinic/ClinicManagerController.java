@@ -82,6 +82,7 @@ public class ClinicManagerController {
         countyColumn.setCellValueFactory(new PropertyValueFactory<>("county"));
         textArea.setStyle("-fx-border-color: red");
         textArea.setEditable(false);
+
         initializeTimeslot(timeslotCombo);
         initializeTimeslot(ogTimeslot);
         initializeTimeslot(newTimeslot);
@@ -180,6 +181,7 @@ public class ClinicManagerController {
     @FXML
     private void onLoadProvidersButtonClick() {
         loadProviders();
+        loadProvidersButton.setDisable(true);
     }
 
     @FXML
