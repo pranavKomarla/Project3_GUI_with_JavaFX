@@ -67,35 +67,34 @@ public class ClinicManagerController {
     @FXML
     private ToggleGroup group;
 
+    @FXML
+    private TabPane tabPane;
+
 
     @FXML
     public void initialize() {
-
-        ObservableList<Location> locations =
-                FXCollections.observableArrayList(Location.values());
+        ObservableList<Location> locations = FXCollections.observableArrayList(Location.values());
         table.setItems(locations);
         zipColumn.setCellValueFactory(new PropertyValueFactory<>("zip"));
         cityColumn.setCellValueFactory(new PropertyValueFactory<>("city"));
         countyColumn.setCellValueFactory(new PropertyValueFactory<>("county"));
-
         textArea.setStyle("-fx-border-color: red");
         initializeTimeslot(timeslotCombo);
         initializeTimeslot(ogTimeslot);
         initializeTimeslot(newTimeslot);
         initializeImageTypes();
-
         listAppointments = new List<Appointment>();
         listProviders = new List<Provider>();
         technicians = new List<Technician>();
         npis = new List<String>();
         medicalRecord = new List<Patient>();
-
         group = new ToggleGroup();
-
         officeVisitRadio.setToggleGroup(group);
         imagingServiceRadio.setToggleGroup(group);
-
-
+        tabPane.getSelectionModel().selectedItemProperty().addListener((observable, oldTab, newTab) -> {
+            if (newTab != null) {newTab.setStyle("-fx-background-color: white; -fx-text-base-color: black;");}
+            if (oldTab != null) {oldTab.setStyle("-fx-background-color: black; -fx-text-base-color: white;");}
+        });
         group.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
             if(newValue == imagingServiceRadio) {
                 providersCombo.setDisable(true);
@@ -319,7 +318,11 @@ public class ClinicManagerController {
 
         }
     }
-
+    /**
+     * Checks the validity of the appointment details and returns true if the appointment is valid.
+     * @param details the details of the appointment
+     * @return true if the appointment is valid, false otherwise
+     */
     private boolean CheckAppointment(String[] details) {
         if(details.length != 7) {
             textArea.setText("Error: Missing Information");
@@ -346,6 +349,13 @@ public class ClinicManagerController {
         return true;
     }
 
+    /**
+     * Checks if the NPI and Imaging Service are valid.
+     * @param TorD the type of the provider
+     * @param NPIImagingService the NPI or Imaging Service
+     * @return true if the NPI and Imaging Service are valid, false otherwise
+     */
+
     private boolean CheckNPIandImagingService(String TorD, String NPIImagingService) {
         if(TorD.equals("D")) {
             if(!npis.contains(NPIImagingService)) {
@@ -362,6 +372,14 @@ public class ClinicManagerController {
         return true;
     }
 
+    /**
+     * Checks the availability of the provider.
+     * @param identifier the identifier of the provider
+     * @param DorT the type of the provider
+     * @param timeslot the timeslot of the appointment
+     * @param date the date of the appointment
+     * @return true if the provider is available, false otherwise
+     */
     private boolean CheckProviderAvailability(String identifier, String DorT, String timeslot, String date) {
         Timeslot timeslot1 = getCurrentTimeslot(timeslot);
         for(int i = 0; i < listAppointments.size(); i ++) {
@@ -373,6 +391,11 @@ public class ClinicManagerController {
         return true;
     }
 
+    /**
+     * Finds the technician with the given details.
+     * @param details the details of the appointment
+     * @return the technician with the given details
+     */
     private Provider getTechnician(String[] details) {
         do {
             if(!findTimeslotRoom(current, details[2], details[6])) {
@@ -390,6 +413,13 @@ public class ClinicManagerController {
         return null;
     }
 
+    /**
+     * Finds the timeslot and room for the technician.
+     * @param technician the technician
+     * @param time the time of the appointment
+     * @param work the work to be done
+     * @return true if the timeslot and room are available, false otherwise
+     */
     private boolean findTimeslotRoom(Technician technician, String time, String work) {
 
         Timeslot timeslot = getCurrentTimeslot(time);
@@ -406,7 +436,11 @@ public class ClinicManagerController {
         }
         return true;
     }
-
+    /**
+     * Finds the doctor with the given NPI.
+     * @param identifier the NPI of the doctor
+     * @return the doctor with the given NPI
+     */
     private Provider getDoctor(String identifier) {
         for(int i = 0; i < listProviders.size(); i++) {
             if(listProviders.get(i) instanceof Doctor) {
@@ -419,6 +453,9 @@ public class ClinicManagerController {
         return null;
     }
 
+    /**
+     * Loads the providers from the file and adds them to the list of providers.
+     */
     private void loadProviders() {
         loadProvidersButton.setDisable(true);
         String filePath = "src/providers.txt"; // Specify your file path here
@@ -468,7 +505,10 @@ public class ClinicManagerController {
         }
 
     }
-
+    /**
+     * Prints the providers and technicians.
+     * @param listProviders the list of providers
+     */
     private void printingProvidersAndTechs(List<Provider> listProviders) {
         Sort.provider(listProviders);
 
@@ -508,11 +548,13 @@ public class ClinicManagerController {
                 textArea.appendText(technicians.get(i).profile.getFname() + " " + technicians.get(i).profile.getLname() + " (" + technicians.get(i).getLocation() + ") --> ");
             }
         }
-
-
-
     }
 
+    /**
+     * Checks if the date and time slot are valid.
+     * @param details the details of the appointment
+     * @return true if the date and time slot are valid, false otherwise
+     */
     private boolean CheckDateAndTimeSlot(String[] details) {
         Calendar currentCalendar = Calendar.getInstance();
         currentCalendar.set(Calendar.HOUR_OF_DAY, 0);
@@ -554,6 +596,14 @@ public class ClinicManagerController {
         return true;
     }
 
+    /**
+     * Checks if the date of birth is valid.
+     * @param dob the date of birth
+     * @param dobStr the date of birth as a string
+     * @param currentCalendar the current calendar
+     * @param dobCalendar the date of birth calendar
+     * @return true if the date of birth is valid, false otherwise
+     */
     private boolean CheckDOB(Date dob, String dobStr, Calendar currentCalendar, Calendar dobCalendar) {
         if(!dob.isValid()){
             textArea.setText("Patient dob: " + dobStr + " is not a valid calendar date ");
@@ -566,6 +616,11 @@ public class ClinicManagerController {
         return true;
     }
 
+    /**
+     * Returns the current timeslot.
+     * @param timeslotStr the timeslot as a string
+     * @return the current timeslot
+     */
     private Timeslot getCurrentTimeslot(String timeslotStr) {
         switch (Integer.parseInt(timeslotStr)) {
             case 1:
