@@ -56,16 +56,16 @@
                            </Label>
                            <VBox maxHeight="-Infinity" minHeight="-Infinity" prefHeight="115.0" prefWidth="315.0" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
                               <children>
-                                 <TextField fx:id="patientFieldLastName" promptText="First Name">
+                                 <TextField fx:id="patientFieldFirstName" promptText="First Name">
                                     <VBox.margin>
                                        <Insets bottom="20.0" />
                                     </VBox.margin></TextField>
-                                 <TextField fx:id="patientFieldFirstName" promptText="Last Name" />
-                                 <TextField fx:id="patientDob" promptText="Date of Birth">
+                                 <TextField fx:id="patientFieldLastName" promptText="Last Name" />
+                                 <DatePicker fx:id="patientDob" prefHeight="26.0" prefWidth="352.0" promptText="Date of Birth">
                                     <VBox.margin>
                                        <Insets top="20.0" />
                                     </VBox.margin>
-                                 </TextField>
+                                 </DatePicker>
                               </children>
                            </VBox>
                            <HBox alignment="CENTER" prefHeight="67.0" prefWidth="329.0" spacing="10" GridPane.columnIndex="1" GridPane.rowIndex="2">
@@ -96,7 +96,7 @@
                            <Button fx:id="loadProvidersButton" disable="false" onAction="#onLoadProvidersButtonClick" text="Load Providers" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="CENTER" />
                            <HBox alignment="CENTER" prefHeight="56.0" prefWidth="315.0" GridPane.columnIndex="1" GridPane.rowIndex="4">
                               <children>
-                                 <Button fx:id="schedule" mnemonicParsing="false" prefHeight="25.0" prefWidth="131.0" text="Schedule" textAlignment="CENTER">
+                                 <Button fx:id="schedule" mnemonicParsing="false" onAction="#CreateAppointment" prefHeight="25.0" prefWidth="131.0" text="Schedule" textAlignment="CENTER">
                                     <HBox.margin>
                                        <Insets right="20.0" />
                                     </HBox.margin>

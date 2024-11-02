@@ -10,6 +10,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import org.w3c.dom.Text;
+import util.Date;
 import util.List;
 import util.Sort;
 
@@ -17,8 +18,11 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.Calendar;
 import java.util.Iterator;
 import java.util.Scanner;
+
+import java.time.format.DateTimeFormatter;
 
 public class ClinicManagerController {
 
@@ -32,6 +36,7 @@ public class ClinicManagerController {
     Technician current;
     Iterator<Technician> iterator;
     boolean arg = true;
+
 
     @FXML
     private TableView<Location> table;
@@ -49,10 +54,10 @@ public class ClinicManagerController {
     private ComboBox<String> timeslotCombo, providersCombo, imagingType;
 
     @FXML
-    private DatePicker appointmentDateField;
+    private DatePicker appointmentDateField,  patientDob;
 
     @FXML
-    private TextField patientFieldFirstName, patientFieldLastName, patientDob;
+    private TextField patientFieldFirstName, patientFieldLastName;
 
     @FXML
     private RadioButton officeVisitRadio, imagingServiceRadio;
@@ -132,20 +137,189 @@ public class ClinicManagerController {
 
     }
 
+    private String times(){
+        String timeInteger = timeslotCombo.getValue().toString();
+        if(timeInteger.equals("9:00 AM")) return "1";
+        if(timeInteger.equals("9:30 AM")) return "2";
+        if(timeInteger.equals("10:00 AM")) return "3";
+        if(timeInteger.equals("10:30 AM")) return "4";
+        if(timeInteger.equals("11:00 AM")) return "5";
+        if(timeInteger.equals("11:30 AM")) return "6";
+        if(timeInteger.equals("2:00 PM")) return "7";
+        if(timeInteger.equals("2:30 PM")) return "8";
+        if(timeInteger.equals("3:00 PM")) return "9";
+        if(timeInteger.equals("3:30 PM")) return "10";
+        if(timeInteger.equals("4:00 PM")) return "11";
+        if(timeInteger.equals("4:30 PM")) return "12";
+        return null;
+    }
+
+    private String providerId(){
+        String docName = providersCombo.getValue().substring(0, providersCombo.getValue().length() - 5);
+        for(int i = 0; i < listProviders.size(); i++) {
+            String currentDoctor = listProviders.get(i).getProfile().getFname() + " " + listProviders.get(i).getProfile().getLname();
+            if(docName.equalsIgnoreCase(currentDoctor)) {
+                Doctor doctor = (Doctor)listProviders.get(i);
+                return doctor.getNpi();
+            }
+        }
+        return null;
+    }
 
     @FXML
     protected void onLoadProvidersButtonClick() {
         loadProviders();
     }
 
+
+
     @FXML
     private void CreateAppointment() {
-        if(appointmentDateField.getValue() == null || patientFieldFirstName.getText() == null || patientFieldLastName.getText() == null || ((RadioButton) group.getSelectedToggle()) == null) {
-            System.out.println("Make sure to provide inputs to all fields");
+        if(appointmentDateField.getValue() == null || patientFieldFirstName.getText() == null || patientFieldLastName.getText() == null || patientDob.getValue() == null) {
+            textArea.setText("Error: Make sure to provide inputs to all fields");
         }
+        else {
+            String command = "";
+            String commandWords[];
+            if (officeVisitRadio.isSelected()) {
+                command += "D,";
+            } else if (imagingServiceRadio.isSelected()) {
+                command += "T,";
+            }
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+            String date = appointmentDateField.getValue().format(formatter);
+            String dob = patientDob.getValue().format(formatter);
+            command += date +",";
+            command += times() + ",";
+            command += patientFieldFirstName.getText() + ",";
+            command += patientFieldLastName.getText() + ",";
+            command += dob + ",";
+            if(officeVisitRadio.isSelected()) {
+                command += providerId();
+            }
+            else if(imagingServiceRadio.isSelected()) {
+                command += imagingType.getValue().toLowerCase();
+            }
 
+            commandWords = command.split(",");
+
+            if(commandWords[0].equals("D")) {
+                if (CheckAppointment(commandWords)) {
+                    Appointment appointment = new Appointment(commandWords, getDoctor(commandWords[6]));
+                    textArea.setText(appointment.toString() + " booked.");
+                }
+            }
+            else if(commandWords[0].equals("T")) {
+                if(CheckAppointment(commandWords) && arg) {
+                    Person tech = getTechnician(commandWords);
+                    if(tech!=null) {
+                        Appointment appointment = new Imaging(commandWords, tech);
+                        listAppointments.add(appointment);
+                        textArea.setText(appointment.toString()+ " booked.");
+                    }
+                }
+            }
+        }
     }
 
+    private boolean CheckAppointment(String[] details) {
+        if(details.length != 7) {
+            textArea.setText("Error: Missing Information");
+            return false;
+        }
+        if(!CheckDateAndTimeSlot(details)) {
+            return false;
+        }
+        if (!details[6].matches("\\d+") && details[0].equals("D")) {
+            textArea.setText(details[6] + " - provider doesn't exist.");
+            return false;
+        }
+        if(!CheckNPIandImagingService(details[0], details[6])) {
+            return false;
+        }
+        Appointment appointment = new Appointment(details, getDoctor(details[6]));
+        if(listAppointments.contains(appointment)) {
+            textArea.setText(details[3] + " " + details[4] + " " + details[5] + " has an existing appointment at the same time slot.");
+            return false;
+        }
+        if(!CheckProviderAvailability(details[6], details[0], details[2], details[1])) {
+            return false;
+        }
+        return true;
+    }
+
+    private boolean CheckNPIandImagingService(String TorD, String NPIImagingService) {
+        if(TorD.equals("D")) {
+            if(!npis.contains(NPIImagingService)) {
+                textArea.setText(NPIImagingService + " - provider doesn't exist.");
+                return false;
+            }
+        }
+        else {
+            if(!NPIImagingService.equals("xray") && !NPIImagingService.equals("ultrasound") && !NPIImagingService.equals("catscan")) {
+                textArea.setText(NPIImagingService + " - imaging service not provided.");
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private boolean CheckProviderAvailability(String identifier, String DorT, String timeslot, String date) {
+        Timeslot timeslot1 = getCurrentTimeslot(timeslot);
+        for(int i = 0; i < listAppointments.size(); i ++) {
+            if(listAppointments.get(i).getProvider() instanceof Doctor && DorT.equals("D") && ((Doctor) listAppointments.get(i).getProvider()).getNpi().equals(identifier) && listAppointments.get(i).getTimeslot().equals(timeslot1) && listAppointments.get(i).getDate().toString().equals(date)) {
+                textArea.setText(listAppointments.get(i).getProvider().toString() + " is not available at slot " + timeslot);
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private Provider getTechnician(String[] details) {
+        do {
+            if(!findTimeslotRoom(current, details[2], details[6])) {
+                current = iterator.next();
+            } else {
+                Technician temp = current;
+                start = current;
+                current = iterator.next();
+                return temp;
+            }
+        } while(!start.getProfile().equals(current.getProfile()));
+        textArea.setText("Cannot find an available technician at all locations for " + details[6].toUpperCase() + " at slot " + details[2] + ".");
+        start = current;
+        current = iterator.next();
+        return null;
+    }
+
+    private boolean findTimeslotRoom(Technician technician, String time, String work) {
+
+        Timeslot timeslot = getCurrentTimeslot(time);
+
+        for(int i = 0; i < listAppointments.size(); i++) {
+            if(listAppointments.get(i) instanceof Imaging) {
+                if(((Imaging) listAppointments.get(i)).getProvider().getProfile().equals(technician.getProfile()) && listAppointments.get(i).getTimeslot().equals(timeslot) ) {
+                    return false;
+                }
+                if(((Technician) listAppointments.get(i).getProvider()).getLocation() == technician.getLocation() && listAppointments.get(i).getTimeslot().equals(timeslot) && ((Imaging) listAppointments.get(i)).getRoom().name().equals(work.toUpperCase())) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    private Provider getDoctor(String identifier) {
+        for(int i = 0; i < listProviders.size(); i++) {
+            if(listProviders.get(i) instanceof Doctor) {
+                if(((Doctor) listProviders.get(i)).getNpi().equals(identifier)) {
+                    return listProviders.get(i);
+                }
+            }
+            // Find appropriate technician
+        }
+        return null;
+    }
 
     private void loadProviders() {
         loadProvidersButton.setDisable(true);
@@ -191,7 +365,8 @@ public class ClinicManagerController {
         // Add all the providers to the combobox
 
         for(int i = 0; i < listProviders.size(); i++) {
-            providersCombo.getItems().add(listProviders.get(i).getProfile().getFname() + " " + listProviders.get(i).getProfile().getLname());
+            if(listProviders.get(i) instanceof Doctor)
+                providersCombo.getItems().add(listProviders.get(i).getProfile().getFname() + " " + listProviders.get(i).getProfile().getLname() + " ("+ ((Doctor) listProviders.get(i)).getNpi() +")");
         }
 
     }
@@ -236,9 +411,61 @@ public class ClinicManagerController {
             }
         }
 
-        System.out.println("\n");
 
 
+    }
+
+    private boolean CheckDateAndTimeSlot(String[] details) {
+        Calendar currentCalendar = Calendar.getInstance();
+        currentCalendar.set(Calendar.HOUR_OF_DAY, 0);
+        currentCalendar.set(Calendar.MINUTE, 0);
+        currentCalendar.set(Calendar.SECOND, 0);
+        currentCalendar.set(Calendar.MILLISECOND, 0);
+        Calendar appointmentCalendar = Calendar.getInstance();
+        appointmentCalendar.set(Calendar.HOUR_OF_DAY, 0);
+        appointmentCalendar.set(Calendar.MINUTE, 0);
+        appointmentCalendar.set(Calendar.SECOND, 0);
+        appointmentCalendar.set(Calendar.MILLISECOND, 0);
+        Calendar dobCalendar = Calendar.getInstance();
+        Calendar sixMonths = Calendar.getInstance();
+        Date appointmentDate = new Date(details[1]);
+        Date dob = new Date(details[5]);
+        appointmentCalendar.set(appointmentDate.getYear(), appointmentDate.getMonth() - 1, appointmentDate.getDay());
+        dobCalendar.set(dob.getYear(), dob.getMonth() - 1, dob.getDay());
+        sixMonths.add(Calendar.MONTH, 6);
+        int dayOfWeek = appointmentCalendar.get(Calendar.DAY_OF_WEEK);
+        if(!appointmentDate.isValid()) {
+            textArea.setText("Appointment date: " + details[1] + " is not a valid calendar date ");
+            return false;
+        } else if(appointmentCalendar.before(currentCalendar) || appointmentCalendar.equals(currentCalendar)) {
+            textArea.setText("Appointment date: " + details[1] + " is today or a date before today.");
+            return false;
+        } else if(appointmentCalendar.after(sixMonths)) {
+            textArea.setText("Appointment date: " + details[1] + " is not within six months.");
+            return false;
+        } else if(dayOfWeek == Calendar.SATURDAY || dayOfWeek == Calendar.SUNDAY) {
+            textArea.setText("Appointment date: " + details[1] + " is Saturday or Sunday.");
+            return false;
+        }
+        if (!details[2].matches("^(1[0-2]|[1-9])$")) {
+            textArea.setText(details[2] + " is not a valid time slot.");
+            return false;
+        }
+        if(!CheckDOB(dob, details[5], currentCalendar, dobCalendar))
+            return false;
+        return true;
+    }
+
+    private boolean CheckDOB(Date dob, String dobStr, Calendar currentCalendar, Calendar dobCalendar) {
+        if(!dob.isValid()){
+            textArea.setText("Patient dob: " + dobStr + " is not a valid calendar date ");
+            return false;
+        } else if(dobCalendar.after(currentCalendar) || dobCalendar.equals(currentCalendar)){
+            textArea.setText("Patient dob: " + dobStr + " is today or a date after today.");
+            return false;
+        }
+
+        return true;
     }
 
     private Timeslot getCurrentTimeslot(String timeslotStr) {
@@ -268,7 +495,7 @@ public class ClinicManagerController {
             case 12:
                 return new Timeslot(16, 30);
             default:
-                System.out.println("not a valid timeslot");
+                textArea.setText("not a valid timeslot");
                 return null;
         }
     }
