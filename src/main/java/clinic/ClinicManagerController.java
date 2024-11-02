@@ -46,31 +46,26 @@ public class ClinicManagerController {
     private TableColumn<Location, String> countyColumn, cityColumn, zipColumn;
 
     @FXML
-    private Button loadProvidersButton, clear, schedule, cancel;
+    private Button loadProvidersButton, clear, schedule, cancel, reschedule;
 
     @FXML
     private TextArea textArea;
 
     @FXML
-    private ComboBox<String> timeslotCombo, providersCombo, imagingType;
+    private ComboBox<String> timeslotCombo, providersCombo, imagingType, ogTimeslot, newTimeslot;
+
 
     @FXML
-    private DatePicker appointmentDateField,  patientDob;
+    private DatePicker appointmentDateField,  patientDob, appointmentDateField1, patientDob1;
 
     @FXML
-    private TextField patientFieldFirstName, patientFieldLastName;
+    private TextField patientFieldFirstName, patientFieldLastName, patientFirstName, patientLastName;
 
     @FXML
     private RadioButton officeVisitRadio, imagingServiceRadio;
 
     @FXML
     private ToggleGroup group;
-
-
-
-
-
-
 
 
     @FXML
@@ -84,7 +79,9 @@ public class ClinicManagerController {
         countyColumn.setCellValueFactory(new PropertyValueFactory<>("county"));
 
         textArea.setStyle("-fx-border-color: red");
-        initializeTimeslotAndProviders();
+        initializeTimeslot(timeslotCombo);
+        initializeTimeslot(ogTimeslot);
+        initializeTimeslot(newTimeslot);
         initializeImageTypes();
 
         listAppointments = new List<Appointment>();
@@ -119,8 +116,8 @@ public class ClinicManagerController {
         );
     }
 
-    private void initializeTimeslotAndProviders() {
-        timeslotCombo.getItems().addAll(
+    private void initializeTimeslot(ComboBox<String> timeslot) {
+        timeslot.getItems().addAll(
             new Timeslot(9, 0).toString(),
             new Timeslot(9, 30).toString(),
             new Timeslot(10, 0).toString(),
@@ -138,8 +135,8 @@ public class ClinicManagerController {
 
     }
 
-    private String times(){
-        String timeInteger = timeslotCombo.getValue().toString();
+    private String times(ComboBox<String> timeSlot){
+        String timeInteger = timeSlot.getValue().toString();
         if(timeInteger.equals("9:00 AM")) return "1";
         if(timeInteger.equals("9:30 AM")) return "2";
         if(timeInteger.equals("10:00 AM")) return "3";
@@ -173,7 +170,8 @@ public class ClinicManagerController {
 
     @FXML
     private void cancelAppointments(){
-        cancelAppointment(commandWords);
+        CreateAppointment();
+        if(arg){cancelAppointment(commandWords);}
     }
 
     @FXML
@@ -185,14 +183,14 @@ public class ClinicManagerController {
     private void setAppointment() {
         CreateAppointment();
 
-        if(commandWords[0].equals("D")) {
+        if(arg && commandWords[0].equals("D")) {
             if (CheckAppointment(commandWords)) {
                 Appointment appointment = new Appointment(commandWords, getDoctor(commandWords[6]));
                 textArea.setText(appointment.toString() + " booked.");
                 listAppointments.add(appointment);
             }
         }
-        else if(commandWords[0].equals("T")) {
+        else if(arg && commandWords[0].equals("T")) {
             if(CheckAppointment(commandWords) && arg) {
                 Person tech = getTechnician(commandWords);
                 if(tech!=null) {
@@ -216,9 +214,84 @@ public class ClinicManagerController {
     }
 
     @FXML
-    private void CreateAppointment() {
-        if(appointmentDateField.getValue() == null || patientFieldFirstName.getText() == null || patientFieldLastName.getText() == null || patientDob.getValue() == null) {
+    private void rescheduleAppt(){
+        createRescheduleAppt();
+        if(arg){reschedule(commandWords);}
+    }
+
+    @FXML
+    private void createRescheduleAppt() {
+        arg = true;
+        if(appointmentDateField1.getValue() == null || patientFirstName.getText() == null || patientLastName.getText() == null || patientDob1.getValue() == null || ogTimeslot.getValue() == null || newTimeslot.getValue() == null) {
             textArea.setText("Error: Make sure to provide inputs to all fields");
+            arg = false;
+        }
+        else {
+            String command = "";
+            command += "R,";
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+            String date = appointmentDateField1.getValue().format(formatter);
+            String dob = patientDob1.getValue().format(formatter);
+            command += date +",";
+            command += times(ogTimeslot) + ",";
+            command += patientFirstName.getText() + ",";
+            command += patientFieldLastName.getText() + ",";
+            command += dob + ",";
+            command += times(newTimeslot);
+
+            commandWords = command.split(",");
+
+        }
+    }
+
+    private void reschedule(String[] details) {
+        Profile newProfile = new Profile(details[3], details[4], details[5]);
+        boolean exists = false;
+        for(int i = 0; i < listAppointments.size(); i++) {
+            if(listAppointments.get(i).getPatient().getProfile().equals(newProfile) && listAppointments.get(i).getDate().toString().equals(details[1]) && listAppointments.get(i).getTimeslot().equals(getCurrentTimeslot(details[2]))) {
+                exists = true;
+                Date date = new Date(details[1]);
+                if(CheckAvailability(((Doctor) listAppointments.get(i).getProvider()).getNpi(), "D", details[6], date)) {
+                    if (!details[6].matches("^(1[0-2]|[1-9])$")) {
+                        textArea.setText(details[6] + " is not a valid time slot.");
+                        return;
+                    }
+                    String[] newDetails = details;
+                    newDetails[2] = details[6];
+                    Appointment appointment = new Appointment(newDetails);
+                    if(listAppointments.contains(appointment)) {
+                        textArea.setText(details[3] + " " + details[4] + " " + details[5] + " has an existing appointment at " + details[1] + " " + getCurrentTimeslot(details[6]).toString());
+                    } else {
+                        listAppointments.get(i).setTimeslot(details[6]);
+                        textArea.setText("Rescheduled to " + listAppointments.get(i).toString());
+                        return;
+                    }
+                }
+            }
+        }
+        if(!exists) {
+            String timeslotStr = getCurrentTimeslot(details[2]).toString();
+            textArea.setText(details[1] + " " + timeslotStr + " " + newProfile.toString() + " does not exist.");
+        }
+    }
+
+    private boolean CheckAvailability(String identifier, String DorT, String timeslot, Date date) {
+        Timeslot timeslot1 = getCurrentTimeslot(timeslot);
+        for(int i = 0; i < listAppointments.size(); i ++) {
+            if(listAppointments.get(i).getProvider() instanceof Doctor && ((Doctor) listAppointments.get(i).getProvider()).getNpi().equals(identifier) && listAppointments.get(i).getTimeslot().equals(timeslot1) && listAppointments.get(i).getDate().equals(date)) {
+                return false;
+            }
+
+        }
+        return true;
+    }
+
+    @FXML
+    private void CreateAppointment() {
+        arg = true;
+        if(appointmentDateField.getValue() == null || patientFieldFirstName.getText() == null || patientFieldLastName.getText() == null || patientDob.getValue() == null || timeslotCombo.getValue() == null || providersCombo == null || imagingType == null) {
+            textArea.setText("Error: Make sure to provide inputs to all fields");
+            arg = false;
         }
         else {
             String command = "";
@@ -231,7 +304,7 @@ public class ClinicManagerController {
             String date = appointmentDateField.getValue().format(formatter);
             String dob = patientDob.getValue().format(formatter);
             command += date +",";
-            command += times() + ",";
+            command += times(timeslotCombo) + ",";
             command += patientFieldFirstName.getText() + ",";
             command += patientFieldLastName.getText() + ",";
             command += dob + ",";
