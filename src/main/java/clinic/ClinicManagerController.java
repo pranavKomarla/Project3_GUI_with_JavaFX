@@ -36,6 +36,7 @@ public class ClinicManagerController {
     Technician current;
     Iterator<Technician> iterator;
     boolean arg = true;
+    String commandWords[];
 
 
     @FXML
@@ -165,13 +166,54 @@ public class ClinicManagerController {
         }
         return null;
     }
+    @FXML
+    private void clearOutput(){
+        textArea.clear();
+    }
 
     @FXML
-    protected void onLoadProvidersButtonClick() {
+    private void cancelAppointments(){
+        cancelAppointment(commandWords);
+    }
+
+    @FXML
+    private void onLoadProvidersButtonClick() {
         loadProviders();
     }
 
+    @FXML
+    private void setAppointment() {
+        CreateAppointment();
 
+        if(commandWords[0].equals("D")) {
+            if (CheckAppointment(commandWords)) {
+                Appointment appointment = new Appointment(commandWords, getDoctor(commandWords[6]));
+                textArea.setText(appointment.toString() + " booked.");
+                listAppointments.add(appointment);
+            }
+        }
+        else if(commandWords[0].equals("T")) {
+            if(CheckAppointment(commandWords) && arg) {
+                Person tech = getTechnician(commandWords);
+                if(tech!=null) {
+                    Appointment appointment = new Imaging(commandWords, tech);
+                    listAppointments.add(appointment);
+                    textArea.setText(appointment.toString()+ " booked.");
+                }
+            }
+        }
+    }
+
+    private void cancelAppointment(String[] command) {
+        Appointment tempApp = new Appointment(command);
+        if (listAppointments.contains(tempApp)) {
+            listAppointments.remove(tempApp);
+            textArea.setText(command[1] +  " " + tempApp.getTimeslot().toString() + " " + command[3] + " " + command[4] + " " + command[5] + " - appointment has been canceled.");
+        }
+        else {
+            textArea.setText(command[1] +  " " + tempApp.getTimeslot().toString() + " " + command[3] + " " + command[4] + " " + command[5] + " - appointment does not exist.");
+        }
+    }
 
     @FXML
     private void CreateAppointment() {
@@ -180,7 +222,6 @@ public class ClinicManagerController {
         }
         else {
             String command = "";
-            String commandWords[];
             if (officeVisitRadio.isSelected()) {
                 command += "D,";
             } else if (imagingServiceRadio.isSelected()) {
@@ -203,22 +244,6 @@ public class ClinicManagerController {
 
             commandWords = command.split(",");
 
-            if(commandWords[0].equals("D")) {
-                if (CheckAppointment(commandWords)) {
-                    Appointment appointment = new Appointment(commandWords, getDoctor(commandWords[6]));
-                    textArea.setText(appointment.toString() + " booked.");
-                }
-            }
-            else if(commandWords[0].equals("T")) {
-                if(CheckAppointment(commandWords) && arg) {
-                    Person tech = getTechnician(commandWords);
-                    if(tech!=null) {
-                        Appointment appointment = new Imaging(commandWords, tech);
-                        listAppointments.add(appointment);
-                        textArea.setText(appointment.toString()+ " booked.");
-                    }
-                }
-            }
         }
     }
 

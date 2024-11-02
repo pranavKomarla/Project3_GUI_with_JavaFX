@@ -96,15 +96,15 @@
                            <Button fx:id="loadProvidersButton" disable="false" onAction="#onLoadProvidersButtonClick" text="Load Providers" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="CENTER" />
                            <HBox alignment="CENTER" prefHeight="56.0" prefWidth="315.0" GridPane.columnIndex="1" GridPane.rowIndex="4">
                               <children>
-                                 <Button fx:id="schedule" mnemonicParsing="false" onAction="#CreateAppointment" prefHeight="25.0" prefWidth="131.0" text="Schedule" textAlignment="CENTER">
+                                 <Button fx:id="schedule" mnemonicParsing="false" onAction="#setAppointment" prefHeight="25.0" prefWidth="131.0" text="Schedule" textAlignment="CENTER">
                                     <HBox.margin>
                                        <Insets right="20.0" />
                                     </HBox.margin>
                                  </Button>
-                                 <Button fx:id="cancel" alignment="CENTER" mnemonicParsing="false" prefHeight="25.0" prefWidth="144.0" text="Cancel" textAlignment="CENTER" />
+                                 <Button fx:id="cancel" alignment="CENTER" mnemonicParsing="false" onAction="#cancelAppointments" prefHeight="25.0" prefWidth="144.0" text="Cancel" textAlignment="CENTER" />
                               </children>
                            </HBox>
-                           <Button fx:id="clear" mnemonicParsing="false" text="Clear" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="4" GridPane.valignment="CENTER" />
+                           <Button fx:id="clear" mnemonicParsing="false" onAction="#clearOutput" text="Clear" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="4" GridPane.valignment="CENTER" />
                         </children>
                      </GridPane>
                   </children>
