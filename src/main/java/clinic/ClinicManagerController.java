@@ -40,19 +40,19 @@ public class ClinicManagerController {
     private TableColumn<Location, String> countyColumn, cityColumn, zipColumn;
 
     @FXML
-    private Button loadProvidersButton;
+    private Button loadProvidersButton, clear, schedule, cancel;
 
     @FXML
     private TextArea textArea;
 
     @FXML
-    private ComboBox<String> timeslotCombo, providersCombo;
+    private ComboBox<String> timeslotCombo, providersCombo, imagingType;
 
     @FXML
     private DatePicker appointmentDateField;
 
     @FXML
-    private TextField patientFieldFirstName, patientFieldLastName;
+    private TextField patientFieldFirstName, patientFieldLastName, patientDob;
 
     @FXML
     private RadioButton officeVisitRadio, imagingServiceRadio;
@@ -77,9 +77,9 @@ public class ClinicManagerController {
         cityColumn.setCellValueFactory(new PropertyValueFactory<>("city"));
         countyColumn.setCellValueFactory(new PropertyValueFactory<>("county"));
 
-        textArea.setStyle("-fx-text-fill: red;");
-        textArea.setText("output area");
+        textArea.setStyle("-fx-border-color: red");
         initializeTimeslotAndProviders();
+        initializeImageTypes();
 
         listAppointments = new List<Appointment>();
         listProviders = new List<Provider>();
@@ -92,6 +92,25 @@ public class ClinicManagerController {
         officeVisitRadio.setToggleGroup(group);
         imagingServiceRadio.setToggleGroup(group);
 
+
+        group.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
+            if(newValue == imagingServiceRadio) {
+                providersCombo.setDisable(true);
+                imagingType.setDisable(false);
+            }
+            if(newValue == officeVisitRadio){
+                providersCombo.setDisable(false);
+                imagingType.setDisable(true);
+            }
+        });
+    }
+
+    private void initializeImageTypes() {
+        imagingType.getItems().addAll(
+            "XRAY",
+            "CATSCAN",
+            "ULTRASOUND"
+        );
     }
 
     private void initializeTimeslotAndProviders() {
@@ -116,7 +135,6 @@ public class ClinicManagerController {
 
     @FXML
     protected void onLoadProvidersButtonClick() {
-        //welcomeText.setText("Welcome to JavaFX Application!");
         loadProviders();
     }
 
@@ -125,10 +143,12 @@ public class ClinicManagerController {
         if(appointmentDateField.getValue() == null || patientFieldFirstName.getText() == null || patientFieldLastName.getText() == null || ((RadioButton) group.getSelectedToggle()) == null) {
             System.out.println("Make sure to provide inputs to all fields");
         }
+
     }
 
 
     private void loadProviders() {
+        loadProvidersButton.setDisable(true);
         String filePath = "src/providers.txt"; // Specify your file path here
         try {
             Scanner scanner = new Scanner(new File(filePath));
@@ -179,15 +199,13 @@ public class ClinicManagerController {
     private void printingProvidersAndTechs(List<Provider> listProviders) {
         Sort.provider(listProviders);
 
-        System.out.println("Providers loaded to the list");
-        textArea.setText("Providers loaded to the list. \n");
+        textArea.setText("Providers loaded to the list. \n \n");
 
         for(int i = 0; i < listProviders.size(); i++) {
             textArea.appendText(listProviders.get(i).toString() + "\n");
 
         }
 
-        System.out.println("\n");
         textArea.appendText("\n");
 
         for(int i = 0; i < listProviders.size(); i++) {
@@ -208,15 +226,13 @@ public class ClinicManagerController {
                 }
             }
         }
-        System.out.println("Rotation list for the technicians.");
+        textArea.appendText("\nRotation list for the technicians.\n\n");
         for(int i = 0; i < technicians.size(); i++) {
             if(i == technicians.size() - 1) {
                 textArea.appendText(technicians.get(i).profile.getFname() + " " + technicians.get(i).profile.getLname() + " (" + technicians.get(i).getLocation() + ")");
-                System.out.print(technicians.get(i).profile.getFname() + " " + technicians.get(i).profile.getLname() + " (" + technicians.get(i).getLocation() + ")");
             }
             else {
                 textArea.appendText(technicians.get(i).profile.getFname() + " " + technicians.get(i).profile.getLname() + " (" + technicians.get(i).getLocation() + ") --> ");
-                System.out.print(technicians.get(i).profile.getFname() + " " + technicians.get(i).profile.getLname() + " (" + technicians.get(i).getLocation() + ") --> ");
             }
         }
 

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
+<?import javafx.geometry.Point3D?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.DatePicker?>
@@ -18,58 +19,96 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
 
-<VBox prefHeight="579.0" prefWidth="605.0" spacing="20.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="clinic.ClinicManagerController">
-   <TabPane prefHeight="356.0" prefWidth="605.0" tabClosingPolicy="UNAVAILABLE">
+<VBox alignment="TOP_CENTER" prefHeight="579.0" prefWidth="605.0" spacing="20.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="clinic.ClinicManagerController">
+   <TabPane prefHeight="345.0" prefWidth="597.0" tabClosingPolicy="UNAVAILABLE">
      <tabs>
        <Tab text="Schedule / Cancel">
             <content>
-
-                <VBox prefHeight="200.0" prefWidth="100.0">
+               <AnchorPane prefHeight="200.0" prefWidth="200.0">
                   <children>
-                     <GridPane prefHeight="331.0" prefWidth="605.0" style="-fx-border-color: blue;">
-                         <Label text="Appointment Date:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
-                         <DatePicker fx:id="appointmentDateField" GridPane.columnIndex="1" GridPane.rowIndex="0" />
-
-                         <Label text="Patient:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
-                         <TextField fx:id="patientFieldFirstName" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                         <TextField fx:id="patientFieldLastName" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-
-                         <HBox alignment="CENTER_LEFT" spacing="10" GridPane.columnIndex="1" GridPane.rowIndex="3">
-                             <RadioButton fx:id="officeVisitRadio" text="Office Visit" />
-                             <RadioButton fx:id="imagingServiceRadio" text="Imaging Service" />
-                         </HBox>
-
-                         <ComboBox fx:id="timeslotCombo" prefWidth="120" promptText="Timeslot" GridPane.columnIndex="0" GridPane.rowIndex="4" />
-                         <ComboBox fx:id="providersCombo" prefWidth="120" promptText="Providers" GridPane.columnIndex="1" GridPane.rowIndex="4" />
-
-                         <!-- Load Providers Button -->
-                         <Button fx:id="loadProvidersButton" disable="false" onAction="#onLoadProvidersButtonClick" text="Load Providers" GridPane.columnIndex="2" GridPane.rowIndex="4" />
-
-                         <!-- Schedule, Cancel, and Clear Buttons -->
-                         <HBox alignment="CENTER" spacing="10" GridPane.columnIndex="1" GridPane.rowIndex="5">
-                             <Button fx:id="scheduleButton" onAction="#CreateAppointment" text="Schedule" />
-                             <Button fx:id="cancelButton" text="Cancel" />
-                             <Button fx:id="clearButton" text="Clear" />
-                         </HBox>
-                        <columnConstraints>
-                           <ColumnConstraints />
-                           <ColumnConstraints />
-                           <ColumnConstraints />
-                        </columnConstraints>
-                        <rowConstraints>
-                           <RowConstraints />
-                           <RowConstraints />
-                           <RowConstraints />
-                           <RowConstraints />
-                           <RowConstraints />
-                           <RowConstraints />
-                        </rowConstraints>
-
+                     <GridPane alignment="CENTER" layoutX="5.0" layoutY="14.0" prefHeight="299.0" prefWidth="592.0" style="-fx-border-color: blue;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0">
+                       <columnConstraints>
+                         <ColumnConstraints hgrow="SOMETIMES" maxWidth="198.0" minWidth="10.0" prefWidth="136.0" />
+                         <ColumnConstraints hgrow="SOMETIMES" maxWidth="336.0" minWidth="10.0" prefWidth="326.0" />
+                           <ColumnConstraints hgrow="SOMETIMES" maxWidth="132.0" minWidth="10.0" prefWidth="128.0" />
+                       </columnConstraints>
+                       <rowConstraints>
+                         <RowConstraints maxHeight="51.0" minHeight="10.0" prefHeight="51.0" vgrow="SOMETIMES" />
+                         <RowConstraints maxHeight="211.0" minHeight="10.0" prefHeight="122.0" vgrow="SOMETIMES" />
+                         <RowConstraints maxHeight="102.0" minHeight="10.0" prefHeight="49.0" vgrow="SOMETIMES" />
+                           <RowConstraints maxHeight="83.0" minHeight="10.0" prefHeight="42.0" vgrow="SOMETIMES" />
+                           <RowConstraints maxHeight="83.0" minHeight="10.0" prefHeight="71.0" vgrow="SOMETIMES" />
+                           
+                       </rowConstraints>
+                        <children>
+                           <Label alignment="CENTER" contentDisplay="CENTER" text="Appointment Date:" textAlignment="CENTER" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
+                              <font>
+                                 <Font size="15.0" />
+                              </font>
+                           </Label>
+                           <DatePicker fx:id="appointmentDateField" promptText="Input Date" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
+                           <Label text="Patient:" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER">
+                              <font>
+                                 <Font size="15.0" />
+                              </font>
+                           </Label>
+                           <VBox maxHeight="-Infinity" minHeight="-Infinity" prefHeight="115.0" prefWidth="315.0" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
+                              <children>
+                                 <TextField fx:id="patientFieldLastName" promptText="First Name">
+                                    <VBox.margin>
+                                       <Insets bottom="20.0" />
+                                    </VBox.margin></TextField>
+                                 <TextField fx:id="patientFieldFirstName" promptText="Last Name" />
+                                 <TextField fx:id="patientDob" promptText="Date of Birth">
+                                    <VBox.margin>
+                                       <Insets top="20.0" />
+                                    </VBox.margin>
+                                 </TextField>
+                              </children>
+                           </VBox>
+                           <HBox alignment="CENTER" prefHeight="67.0" prefWidth="329.0" spacing="10" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                              <children>
+                                 <RadioButton fx:id="officeVisitRadio" text="Office Visit">
+                                    <HBox.margin>
+                                       <Insets left="20.0" right="50.0" />
+                                    </HBox.margin></RadioButton>
+                                 <RadioButton fx:id="imagingServiceRadio" text="Imaging Service">
+                                    <HBox.margin>
+                                       <Insets />
+                                    </HBox.margin></RadioButton>
+                              </children>
+                           </HBox>
+                           <HBox alignment="CENTER" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="CENTER">
+                              <children>
+                                 <ComboBox fx:id="providersCombo" prefHeight="25.0" prefWidth="99.0" promptText="Providers">
+                                    <HBox.margin>
+                                       <Insets right="10.0" />
+                                    </HBox.margin></ComboBox>
+                                 <ComboBox fx:id="timeslotCombo" prefHeight="25.0" prefWidth="95.0" promptText="Timeslot">
+                                    <HBox.margin>
+                                       <Insets right="10.0" />
+                                    </HBox.margin></ComboBox>
+                                 <ComboBox fx:id="imagingType" prefHeight="25.0" prefWidth="112.0" promptText="Image Type" />
+                              </children>
+                           </HBox>
+                           <Button fx:id="loadProvidersButton" disable="false" onAction="#onLoadProvidersButtonClick" text="Load Providers" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="CENTER" />
+                           <HBox alignment="CENTER" prefHeight="56.0" prefWidth="315.0" GridPane.columnIndex="1" GridPane.rowIndex="4">
+                              <children>
+                                 <Button fx:id="schedule" mnemonicParsing="false" prefHeight="25.0" prefWidth="131.0" text="Schedule" textAlignment="CENTER">
+                                    <HBox.margin>
+                                       <Insets right="20.0" />
+                                    </HBox.margin>
+                                 </Button>
+                                 <Button fx:id="cancel" alignment="CENTER" mnemonicParsing="false" prefHeight="25.0" prefWidth="144.0" text="Cancel" textAlignment="CENTER" />
+                              </children>
+                           </HBox>
+                           <Button fx:id="clear" mnemonicParsing="false" text="Clear" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="4" GridPane.valignment="CENTER" />
+                        </children>
                      </GridPane>
-                  </children></VBox>
-
-
+                  </children>
+               </AnchorPane>
             </content>
        </Tab>
        <Tab text="Reschedule">
@@ -97,5 +136,11 @@
          <Insets />
       </VBox.margin>
    </TabPane>
-   <TextArea fx:id="textArea" prefHeight="204.0" prefWidth="605.0" style="-fx-background-color: red;" />
+   <TextArea fx:id="textArea" editable="false" prefHeight="204.0" prefWidth="592.0" promptText="output text" style="-fx-border-color: red;">
+      <rotationAxis>
+         <Point3D />
+      </rotationAxis>
+      <VBox.margin>
+         <Insets left="5.0" right="5.0" />
+      </VBox.margin></TextArea>
 </VBox>
