@@ -81,6 +81,7 @@ public class ClinicManagerController {
         cityColumn.setCellValueFactory(new PropertyValueFactory<>("city"));
         countyColumn.setCellValueFactory(new PropertyValueFactory<>("county"));
         textArea.setStyle("-fx-border-color: red");
+        textArea.setEditable(false);
         initializeTimeslot(timeslotCombo);
         initializeTimeslot(ogTimeslot);
         initializeTimeslot(newTimeslot);
@@ -225,7 +226,7 @@ public class ClinicManagerController {
     private void createRescheduleAppt() {
         arg = true;
 
-        if(appointmentDateField1.getEditor().getText().matches(".*[a-zA-Z].*") || patientDob1.getEditor().getText().matches(".*[a-zA-Z].*")) {
+        if(appointmentDateField1.getEditor().getText().matches(".*[a-zA-Z\\s].*") || patientDob1.getEditor().getText().matches(".*[a-zA-Z\\s].*")) {
             textArea.setText("Make sure to input valid dates in the date fields");
             arg = false;
             return;
@@ -312,18 +313,7 @@ public class ClinicManagerController {
             return;
         }
         else {
-            //String inputText = appointmentDateField.getEditor().getText();
-//            try {
-//                // Attempt to parse the input text to a date
-//                LocalDate.parse(inputText, DateTimeFormatter.ofPattern("MM/dd/yyyy"));
-//
-//            } catch (DateTimeParseException e) {
-//                // If parsing fails, alert the user
-//                textArea.setText("Make sure to enter valid dates into the date fields.");
-//                appointmentDateField.getEditor().clear();
-//
-//                return;
-//            }
+
             String command = "";
             if (officeVisitRadio.isSelected()) {
                 command += "D,";
