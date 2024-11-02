@@ -18,6 +18,8 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.Calendar;
 import java.util.Iterator;
 import java.util.Scanner;
@@ -116,6 +118,7 @@ public class ClinicManagerController {
     }
 
     private void initializeTimeslot(ComboBox<String> timeslot) {
+
         timeslot.getItems().addAll(
             new Timeslot(9, 0).toString(),
             new Timeslot(9, 30).toString(),
@@ -221,16 +224,24 @@ public class ClinicManagerController {
     @FXML
     private void createRescheduleAppt() {
         arg = true;
-        if(appointmentDateField1.getValue() == null || patientFirstName.getText() == null || patientLastName.getText() == null || patientDob1.getValue() == null || ogTimeslot.getValue() == null || newTimeslot.getValue() == null) {
+
+        if(appointmentDateField1.getEditor().getText().matches(".*[a-zA-Z].*") || patientDob1.getEditor().getText().matches(".*[a-zA-Z].*")) {
+            textArea.setText("Make sure to input valid dates in the date fields");
+            arg = false;
+            return;
+        }
+        if(appointmentDateField1.getEditor().getText() == null || patientFirstName.getText() == null || patientLastName.getText() == null || patientDob1.getEditor().getText() == null || ogTimeslot.getValue() == null || newTimeslot.getValue() == null) {
             textArea.setText("Error: Make sure to provide inputs to all fields");
             arg = false;
         }
         else {
+
             String command = "";
             command += "R,";
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
-            String date = appointmentDateField1.getValue().format(formatter);
-            String dob = patientDob1.getValue().format(formatter);
+
+            String date = appointmentDateField1.getEditor().getText();
+            String dob = patientDob1.getEditor().getText();
+
             command += date +",";
             command += times(ogTimeslot) + ",";
             command += patientFirstName.getText() + ",";
@@ -288,25 +299,48 @@ public class ClinicManagerController {
     @FXML
     private void CreateAppointment() {
         arg = true;
-        if(appointmentDateField.getValue() == null || patientFieldFirstName.getText() == null || patientFieldLastName.getText() == null || patientDob.getValue() == null || timeslotCombo.getValue() == null || providersCombo == null || imagingType == null) {
+
+
+        if(appointmentDateField.getEditor().getText().matches(".*[a-zA-Z\\s].*") || patientDob.getEditor().getText().matches(".*[a-zA-Z\\s].*")) {
+            textArea.setText("Make sure to input valid dates in the date fields");
+            arg = false;
+            return;
+        }
+        if(appointmentDateField.getEditor() == null || patientFieldFirstName.getText() == null || patientFieldLastName.getText() == null || patientDob.getEditor() == null || timeslotCombo.getValue() == null || providersCombo == null || imagingType == null) {
             textArea.setText("Error: Make sure to provide inputs to all fields");
             arg = false;
+            return;
         }
         else {
+            //String inputText = appointmentDateField.getEditor().getText();
+//            try {
+//                // Attempt to parse the input text to a date
+//                LocalDate.parse(inputText, DateTimeFormatter.ofPattern("MM/dd/yyyy"));
+//
+//            } catch (DateTimeParseException e) {
+//                // If parsing fails, alert the user
+//                textArea.setText("Make sure to enter valid dates into the date fields.");
+//                appointmentDateField.getEditor().clear();
+//
+//                return;
+//            }
             String command = "";
             if (officeVisitRadio.isSelected()) {
                 command += "D,";
             } else if (imagingServiceRadio.isSelected()) {
                 command += "T,";
             }
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
-            String date = appointmentDateField.getValue().format(formatter);
-            String dob = patientDob.getValue().format(formatter);
-            command += date +",";
+//            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+//            String date = appointmentDateField.getValue().format(formatter);
+            String dateGiven = appointmentDateField.getEditor().getText();
+            String dobGiven = patientDob.getEditor().getText();
+
+
+            command += dateGiven +",";
             command += times(timeslotCombo) + ",";
             command += patientFieldFirstName.getText() + ",";
             command += patientFieldLastName.getText() + ",";
-            command += dob + ",";
+            command += dobGiven + ",";
             if(officeVisitRadio.isSelected()) {
                 command += providerId();
             }
