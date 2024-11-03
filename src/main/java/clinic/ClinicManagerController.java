@@ -18,6 +18,8 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.Calendar;
 import java.util.Iterator;
 import java.util.Scanner;
@@ -71,6 +73,11 @@ public class ClinicManagerController {
     private TabPane tabPane;
 
 
+    /**
+     * Initializes the controller class. This method is called after all
+     * @FXML annotated fields have been injected and is used to set up
+     * the initial state of the user interface components.
+     */
     @FXML
     public void initialize() {
         ObservableList<Location> locations = FXCollections.observableArrayList(Location.values());
@@ -79,6 +86,8 @@ public class ClinicManagerController {
         cityColumn.setCellValueFactory(new PropertyValueFactory<>("city"));
         countyColumn.setCellValueFactory(new PropertyValueFactory<>("county"));
         textArea.setStyle("-fx-border-color: red");
+        textArea.setEditable(false);
+
         initializeTimeslot(timeslotCombo);
         initializeTimeslot(ogTimeslot);
         initializeTimeslot(newTimeslot);
@@ -108,6 +117,10 @@ public class ClinicManagerController {
         });
     }
 
+    /**
+     * Initializes the available imaging types by adding them to the
+     * imagingType combo box.
+     */
     private void initializeImageTypes() {
         imagingType.getItems().addAll(
             "XRAY",
@@ -115,6 +128,8 @@ public class ClinicManagerController {
             "ULTRASOUND"
         );
     }
+
+
 
     private void initializeListOrders(){
         orderTypes.getItems().addAll(
@@ -354,8 +369,15 @@ public class ClinicManagerController {
             return true;
         }
     }
-
+    /**
+     * Initializes the given ComboBox with available time slots.
+     * Time slots are represented in a 24-hour format and are added
+     * as strings to the ComboBox.
+     *
+     * @param timeslot the ComboBox to be populated with time slot options
+     */
     private void initializeTimeslot(ComboBox<String> timeslot) {
+
         timeslot.getItems().addAll(
             new Timeslot(9, 0).toString(),
             new Timeslot(9, 30).toString(),
@@ -374,6 +396,15 @@ public class ClinicManagerController {
 
     }
 
+    /**
+     * Converts the selected time slot in the ComboBox to an
+     * integer representation for further processing.
+     * Each time corresponds to a specific integer value.
+     *
+     * @param timeSlot the ComboBox containing time slot options
+     * @return a string representing the corresponding integer value
+     *         for the selected time, or null if the time does not match
+     */
     private String times(ComboBox<String> timeSlot){
         String timeInteger = timeSlot.getValue().toString();
         if(timeInteger.equals("9:00 AM")) return "1";
@@ -391,6 +422,14 @@ public class ClinicManagerController {
         return null;
     }
 
+    /**
+     * Retrieves the NPI (National Provider Identifier) of a
+     * selected provider from the ComboBox.
+     * The provider's name is extracted, and a search is performed
+     * in the list of providers to find the corresponding NPI.
+     *
+     * @return the NPI of the selected provider, or null if not found
+     */
     private String providerId(){
         String docName = providersCombo.getValue().substring(0, providersCombo.getValue().length() - 5);
         for(int i = 0; i < listProviders.size(); i++) {
@@ -402,22 +441,41 @@ public class ClinicManagerController {
         }
         return null;
     }
+
+    /**
+     * Clears the contents of the output text area.
+     */
     @FXML
     private void clearOutput(){
         textArea.clear();
     }
 
+    /**
+     * Cancels an appointment based on the current command words.
+     * First, it creates an appointment and then cancels it
+     * if the condition is satisfied.
+     */
     @FXML
     private void cancelAppointments(){
         CreateAppointment();
         if(arg){cancelAppointment(commandWords);}
     }
 
+    /**
+     * Loads providers into the provider selection interface
+     * and disables the button to prevent multiple loads.
+     */
     @FXML
     private void onLoadProvidersButtonClick() {
         loadProviders();
+        loadProvidersButton.setDisable(true);
     }
 
+    /**
+     * Sets an appointment based on the provided command words.
+     * If the command indicates a doctor or technician appointment,
+     * it checks for availability and books the appointment accordingly.
+     */
     @FXML
     private void setAppointment() {
         CreateAppointment();
@@ -442,6 +500,14 @@ public class ClinicManagerController {
         }
     }
 
+
+    /**
+     * Cancels an appointment if it exists in the list of appointments.
+     * Displays a message in the text area indicating whether the
+     * appointment was successfully canceled or if it does not exist.
+     *
+     * @param command an array of strings representing the command details
+     */
     private void cancelAppointment(String[] command) {
         Appointment tempApp = new Appointment(command);
         if (listAppointments.contains(tempApp)) {
@@ -453,25 +519,44 @@ public class ClinicManagerController {
         }
     }
 
+    /**
+     * Reschedules an appointment by creating a new appointment
+     * command and calling the reschedule method if the arguments
+     * are valid.
+     */
     @FXML
     private void rescheduleAppt(){
         createRescheduleAppt();
         if(arg){reschedule(commandWords);}
     }
 
+    /**
+     * Creates the command for rescheduling an appointment based on
+     * user input in the corresponding fields. Validates the input
+     * fields to ensure dates and required fields are properly filled
+     * before creating the command string.
+     */
     @FXML
     private void createRescheduleAppt() {
         arg = true;
-        if(appointmentDateField1.getValue() == null || patientFirstName.getText() == null || patientLastName.getText() == null || patientDob1.getValue() == null || ogTimeslot.getValue() == null || newTimeslot.getValue() == null) {
+
+        if(appointmentDateField1.getEditor().getText().matches(".*[a-zA-Z\\s].*") || patientDob1.getEditor().getText().matches(".*[a-zA-Z\\s].*")) {
+            textArea.setText("Make sure to input valid dates in the date fields");
+            arg = false;
+            return;
+        }
+        if(appointmentDateField1.getEditor().getText().length() == 0 || patientFirstName.getText().trim().length() == 0 || patientLastName.getText().trim().length() == 0 || patientDob1.getEditor().getText().length() == 0 || ogTimeslot.getValue() == null || newTimeslot.getValue() == null) {
             textArea.setText("Error: Make sure to provide inputs to all fields");
             arg = false;
         }
         else {
+
             String command = "";
             command += "R,";
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
-            String date = appointmentDateField1.getValue().format(formatter);
-            String dob = patientDob1.getValue().format(formatter);
+
+            String date = appointmentDateField1.getEditor().getText();
+            String dob = patientDob1.getEditor().getText();
+
             command += date +",";
             command += times(ogTimeslot) + ",";
             command += patientFirstName.getText() + ",";
@@ -484,6 +569,16 @@ public class ClinicManagerController {
         }
     }
 
+    /**
+     * Reschedules an appointment based on the provided details.
+     * Checks if the appointment exists, verifies the new timeslot
+     * availability, and updates the appointment details accordingly.
+     * Displays relevant messages in the text area based on the
+     * operation outcome.
+     *
+     * @param details an array of strings containing details of the
+     *                appointment to be rescheduled
+     */
     private void reschedule(String[] details) {
         Profile newProfile = new Profile(details[3], details[4], details[5]);
         boolean exists = false;
@@ -515,6 +610,19 @@ public class ClinicManagerController {
         }
     }
 
+
+    /**
+     * Checks the availability of a provider for a specific timeslot
+     * on a given date. Returns false if the provider is already
+     * booked for that timeslot and true otherwise.
+     *
+     * @param identifier the NPI of the provider to check availability
+     * @param DorT      indicates if the provider is a doctor or technician
+     * @param timeslot  the timeslot to check for conflicts
+     * @param date      the date for which availability is being checked
+     * @return true if the provider is available for the specified
+     *         timeslot and date, false if they are not
+     */
     private boolean CheckAvailability(String identifier, String DorT, String timeslot, Date date) {
         Timeslot timeslot1 = getCurrentTimeslot(timeslot);
         for(int i = 0; i < listAppointments.size(); i ++) {
@@ -526,28 +634,46 @@ public class ClinicManagerController {
         return true;
     }
 
+
+    /**
+     * Creates an appointment by collecting details from the input fields.
+     * Validates the input to ensure all fields are filled and contain valid data.
+     * Builds a command string to represent the appointment details.
+     */
     @FXML
     private void CreateAppointment() {
         arg = true;
-        if(appointmentDateField.getValue() == null || patientFieldFirstName.getText() == null || patientFieldLastName.getText() == null || patientDob.getValue() == null || timeslotCombo.getValue() == null || providersCombo == null || imagingType == null) {
+
+
+        if(appointmentDateField.getEditor().getText().matches(".*[a-zA-Z\\s].*") || patientDob.getEditor().getText().matches(".*[a-zA-Z\\s].*")) {
+            textArea.setText("Make sure to input valid dates in the date fields");
+            arg = false;
+            return;
+        }
+        if(appointmentDateField.getEditor().getText().length() == 0 || patientFieldFirstName.getText().trim().length() == 0 || patientFieldLastName.getText().trim().length() == 0 || patientDob.getEditor().getText().length() == 0 || timeslotCombo.getValue() == null || providersCombo == null || imagingType == null) {
             textArea.setText("Error: Make sure to provide inputs to all fields");
             arg = false;
+            return;
         }
         else {
+
             String command = "";
             if (officeVisitRadio.isSelected()) {
                 command += "D,";
             } else if (imagingServiceRadio.isSelected()) {
                 command += "T,";
             }
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
-            String date = appointmentDateField.getValue().format(formatter);
-            String dob = patientDob.getValue().format(formatter);
-            command += date +",";
+//            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+//            String date = appointmentDateField.getValue().format(formatter);
+            String dateGiven = appointmentDateField.getEditor().getText();
+            String dobGiven = patientDob.getEditor().getText();
+
+
+            command += dateGiven +",";
             command += times(timeslotCombo) + ",";
             command += patientFieldFirstName.getText() + ",";
             command += patientFieldLastName.getText() + ",";
-            command += dob + ",";
+            command += dobGiven + ",";
             if(officeVisitRadio.isSelected()) {
                 command += providerId();
             }
@@ -559,6 +685,7 @@ public class ClinicManagerController {
 
         }
     }
+
     /**
      * Checks the validity of the appointment details and returns true if the appointment is valid.
      * @param details the details of the appointment
