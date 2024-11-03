@@ -52,7 +52,7 @@ public class ClinicManagerController {
     private TextArea textArea;
 
     @FXML
-    private ComboBox<String> timeslotCombo, providersCombo, imagingType, ogTimeslot, newTimeslot;
+    private ComboBox<String> timeslotCombo, providersCombo, imagingType, ogTimeslot, newTimeslot, orderTypes;
 
 
     @FXML
@@ -83,6 +83,7 @@ public class ClinicManagerController {
         initializeTimeslot(ogTimeslot);
         initializeTimeslot(newTimeslot);
         initializeImageTypes();
+        initializeListOrders();
         listAppointments = new List<Appointment>();
         listProviders = new List<Provider>();
         technicians = new List<Technician>();
@@ -113,6 +114,245 @@ public class ClinicManagerController {
             "CATSCAN",
             "ULTRASOUND"
         );
+    }
+
+    private void initializeListOrders(){
+        orderTypes.getItems().addAll(
+            "date/time/provider",
+            "patient/date/time",
+            "county/date/time"
+        );
+    }
+
+    private String sortingType(){
+        if(orderTypes.getValue() != null) {
+            if (orderTypes.getValue().equals("date/time/provider")) {
+                return "PA";
+            } else if (orderTypes.getValue().equals("patient/date/time")) {
+                return "PP";
+            } else if (orderTypes.getValue().equals("county/date/time")) {
+                return "PL";
+            }
+        }
+        return null;
+    }
+
+    @FXML
+    private void displayAppointments(){
+        String sortType = sortingType();
+        if(sortType != null && CheckList(sortType)){
+            printList(sortType);
+        }
+        else{
+            textArea.setText("Error: Missing Order Type");
+        }
+    }
+
+    @FXML
+    private void displayImagingAppts(){
+        String sortType = "PI";
+        if(CheckList(sortType)) {
+            printList(sortType);
+        }
+    }
+
+    @FXML
+    private void displayOfficeAppts(){
+        String sortType = "PO";
+        if(CheckList(sortType)){
+            printList(sortType);
+        }
+    }
+
+    @FXML
+    private void displayBillingStatements(){
+        String sortType = "PS";
+        if(CheckList(sortType)){
+            printList(sortType);
+        }
+    }
+
+    @FXML
+    private void displayCreditStatements(){
+        String sortType = "PC";
+        System.out.println(listAppointments.isEmpty());
+        if(CheckList(sortType)){
+            printList(sortType);
+        }
+    }
+    /**
+     * Prints the list of appointments based on the command.
+     * @param type the command words
+     */
+
+    private void printList(String type) {
+        if(type.equals("PP")) {
+            Sort.appointment(listAppointments, '1');
+            textArea.setText("** List of appointments, ordered by patient/date/time.** \n\n");
+            print("A");
+        }
+        if(type.equals("PA")) {
+            Sort.appointment(listAppointments, '2');
+            textArea.setText("** List of appointments, ordered by date/time/provider.** \n\n");
+            print("A");
+        }
+        if(type.equals("PL")) {
+            Sort.appointment(listAppointments, '3');
+            textArea.setText("** List of appointments, ordered by county/date/time.** \n\n");
+            print("A");
+        }
+        if(type.equals("PO")) {
+            Sort.appointment(listAppointments, '4');
+            textArea.setText("** List of office appointments ordered by county/date/time.** \n\n");
+            print("D");
+        }
+        if(type.equals("PI")) {
+            Sort.appointment(listAppointments, '5');
+            textArea.setText("** List of radiology appointments ordered by county/date/time.** \n\n");
+            print("T");
+        }
+        if(type.equals("PC")) {
+            textArea.setText("** Credit Amount ordered by Provider. **\n\n");
+            creditAmounts();
+        }
+        if(type.equals("PS")) {
+            textArea.setText("** Billing Statement, ordered by patient. **\n\n");
+            moveToMedicalRecord();
+        }
+        textArea.appendText("\n** end of list **");
+    }
+
+    /**
+     * Moves the appointments to the medical record.
+     * @param patient the patient
+     * @param medicalRecord the medical record
+     */
+    private boolean contains(Patient patient, List<Patient> medicalRecord) {
+        for(int i = 0; i < medicalRecord.size(); i++) {
+            if(medicalRecord.get(i).getProfile().equals(patient.getProfile())) {
+                return true;
+            }
+        }
+        return false;
+
+    }
+
+    /**
+     * Returns the index of the patient in the medical record.
+     * @param patient the patient
+     * @param medicalRecord the medical record
+     * @return the index of the patient
+     */
+    private int index(Patient patient, List<Patient> medicalRecord) {
+        for(int i = 0; i < medicalRecord.size(); i++) {
+            if(medicalRecord.get(i).getProfile().equals(patient.getProfile())) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    /**
+     * Moves the appointments to the medical record.
+     */
+    private void moveToMedicalRecord(){
+        for(int i = 0; i < listAppointments.size(); i++) {
+            Person pa1 = listAppointments.get(i).getPatient();
+            Patient patient = new Patient(pa1.getProfile());
+
+            if(contains(patient, medicalRecord)) {
+                medicalRecord.get(index(patient, medicalRecord)).getVisits().add(listAppointments.get(i));
+            }
+            else {
+                Visit visit = new Visit(listAppointments.get(i));
+                patient.setVisits(visit);
+                medicalRecord.add(patient);
+            }
+
+        }
+        clearAll();
+        Sort.PS(medicalRecord);
+        for(int i = 0; i < medicalRecord.size(); i++) {
+            textArea.appendText("("+ (i + 1) + ") " + medicalRecord.get(i).toString());
+            textArea.appendText("\n");
+        }
+    }
+
+    /**
+     * Clears all the appointments.
+     */
+    private void clearAll() {
+        while(!listAppointments.isEmpty()) {
+            listAppointments.remove(listAppointments.get(0));
+        }
+    }
+
+    /**
+     * Adds the credit amounts to each of the doctors.
+     */
+    private void creditAmounts(){
+        List<Provider> providers = new List<>();
+        for(int i = 0; i < listAppointments.size(); i++) {
+            Provider p = (Provider) listAppointments.get(i).getProvider();
+            if(providers.contains(p)) {
+                providers.get(providers.indexOf(p)).addToCredit();
+            }
+            else {
+                providers.add(p);
+                providers.get(providers.indexOf(p)).addToCredit();
+
+            }
+        }
+        Sort.PC(providers);
+        for(int i = 0; i < providers.size(); i++) {
+            textArea.appendText("("+(i + 1)+") " + providers.get(i).getProfile().getFname() + " " + providers.get(i).getProfile().getLname() + " " + providers.get(i).getProfile().getDob().toString()+" [credit amount: $" + providers.get(i).getCredit() + ".00]");
+            textArea.appendText("\n");
+        }
+    }
+
+    /**
+     * Prints the list of appointments based on the type.
+     * @param type the type of appointment
+     */
+    private void print(String type) {
+        for(int i = 0; i < listAppointments.size(); i++) {
+            if(type.equals("D")) {
+                if(listAppointments.get(i).getProvider() instanceof Doctor) {
+                    textArea.appendText(listAppointments.get(i).toString());
+                    textArea.appendText("\n");
+                }
+            }
+            else if(type.equals("T")){
+                if(listAppointments.get(i).getProvider() instanceof Technician) {
+                    textArea.appendText(listAppointments.get(i).toString());
+                    textArea.appendText("\n");
+                }
+            }
+            else {
+                textArea.appendText(listAppointments.get(i).toString());
+                textArea.appendText("\n");
+            }
+        }
+    }
+
+    /**
+     * Checks the list of appointments.
+     * @param commandWords the command words
+     * @return true if the list of appointments is not empty, false otherwise
+     */
+    private boolean CheckList(String commandWords) {
+        if(commandWords.equals("PS") || commandWords.equals("PP") || commandWords.equals("PL") || commandWords.equals("PA") || commandWords.equals("PC") || commandWords.equals("PI") || commandWords.equals("PO")) {
+            if(listAppointments.isEmpty()) {
+                textArea.setText("Schedule calendar is empty.");
+                return false;
+            }
+            else{
+                return true;
+            }
+        }
+        else{
+            return true;
+        }
     }
 
     private void initializeTimeslot(ComboBox<String> timeslot) {
@@ -185,8 +425,9 @@ public class ClinicManagerController {
         if(arg && commandWords[0].equals("D")) {
             if (CheckAppointment(commandWords)) {
                 Appointment appointment = new Appointment(commandWords, getDoctor(commandWords[6]));
-                textArea.setText(appointment.toString() + " booked.");
                 listAppointments.add(appointment);
+                textArea.setText(appointment.toString() + " booked.");
+
             }
         }
         else if(arg && commandWords[0].equals("T")) {

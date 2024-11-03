@@ -181,21 +181,81 @@
                   </children></AnchorPane>
          </content>
        </Tab>
+         <Tab style="-fx-background-color: black; -fx-text-base-color: white;" text="Listing Appointments">
+            <content>
+               <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                  <children>
+                     <GridPane alignment="CENTER" layoutX="5.0" layoutY="3.0" prefHeight="315.0" prefWidth="605.0" style="-fx-background-color: white; -fx-border-color: blue; -fx-border-width: 5px;" AnchorPane.bottomAnchor="2.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="3.0">
+                       <columnConstraints>
+                         <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                         <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                       </columnConstraints>
+                       <rowConstraints>
+                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                       </rowConstraints>
+                        <children>
+                           <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="27.0" prefWidth="242.0" text="List All Appointments By:" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
+                              <font>
+                                 <Font size="21.0" />
+                              </font>
+                           </Label>
+                           <HBox alignment="CENTER" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
+                              <children>
+                                 <ComboBox fx:id="orderTypes" prefHeight="31.0" prefWidth="181.0" promptText="Pick List Order">
+                                    <opaqueInsets>
+                                       <Insets />
+                                    </opaqueInsets>
+                                    <HBox.margin>
+                                       <Insets right="20.0" />
+                                    </HBox.margin>
+                                 </ComboBox>
+                                 <Button mnemonicParsing="false" onAction="#displayAppointments" prefHeight="31.0" prefWidth="60.0" text="Display">
+                                    <HBox.margin>
+                                       <Insets right="20.0" />
+                                    </HBox.margin>
+                                 </Button>
+                              </children>
+                           </HBox>
+                           <Button mnemonicParsing="false" onAction="#displayImagingAppts" prefHeight="37.0" prefWidth="222.0" text="Display Imaging Appointments" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER">
+                              <font>
+                                 <Font size="15.0" />
+                              </font>
+                           </Button>
+                           <Button mnemonicParsing="false" onAction="#displayOfficeAppts" prefHeight="37.0" prefWidth="204.0" text="Display Office Appointments" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER">
+                              <font>
+                                 <Font size="15.0" />
+                              </font>
+                           </Button>
+                           <Button mnemonicParsing="false" onAction="#displayCreditStatements" prefHeight="37.0" prefWidth="175.0" text="Display Credit Amounts" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER">
+                              <font>
+                                 <Font size="15.0" />
+                              </font>
+                           </Button>
+                           <Button mnemonicParsing="false" onAction="#displayBillingStatements" prefHeight="37.0" prefWidth="175.0" text="Display Billing Amounts" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER">
+                              <font>
+                                 <Font size="15.0" />
+                              </font>
+                           </Button>
+                        </children>
+                     </GridPane>
+                  </children></AnchorPane>
+            </content>
+         </Tab>
          <Tab style="-fx-background-color: black; -fx-text-base-color: white;" text="Clinic Locations">
             <content>
-               <TableView fx:id="table" prefHeight="200.0" prefWidth="200.0">
+               <TableView fx:id="table" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: white;">
                  <columns>
                    <TableColumn fx:id="cityColumn" prefWidth="75.0" text="City" />
                    <TableColumn fx:id="countyColumn" prefWidth="75.0" text="County" />
                      <TableColumn fx:id="zipColumn" prefWidth="75.0" text="Zip" />
                  </columns>
+                  <opaqueInsets>
+                     <Insets />
+                  </opaqueInsets>
                </TableView>
             </content></Tab>
-         <Tab style="-fx-background-color: black; -fx-text-base-color: white;" text="Demo Menu">
-            <content>
-               <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
-            </content>
-         </Tab>
      </tabs>
       <VBox.margin>
          <Insets />
