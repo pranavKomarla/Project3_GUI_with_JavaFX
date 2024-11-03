@@ -18,7 +18,15 @@ import java.util.Calendar;
 import java.util.Iterator;
 import java.util.Scanner;
 
+/**
+ * ClinicManagerController is responsible for managing clinic operations, including handling appointments,
+ * providers, technicians, and patient medical records. It allows for loading provider data,
+ * managing the clinic's schedule, and other functionalities. It uses a GUI from JavaFX allowing for specific user input.
+ *
+ * @author Pranav Sudheer and Pranav Komarla
+ */
 public class ClinicManagerController {
+
 
 
     private List<Appointment> listAppointments;
@@ -122,7 +130,10 @@ public class ClinicManagerController {
     }
 
 
-
+    /**
+     * Initializes the list of sorting options for displaying orders in the `orderTypes` ComboBox.
+     * Adds three ordering types: "date/time/provider", "patient/date/time", and "county/date/time".
+     */
     private void initializeListOrders(){
         orderTypes.getItems().addAll(
             "date/time/provider",
@@ -131,6 +142,15 @@ public class ClinicManagerController {
         );
     }
 
+    /**
+     * Determines the sorting type based on the selected order type from the `orderTypes` ComboBox.
+     *
+     * @return a string code representing the sorting type:
+     *         "PA" for "date/time/provider",
+     *         "PP" for "patient/date/time",
+     *         "PL" for "county/date/time",
+     *         or null if no selection is made.
+     */
     private String sortingType(){
         if(orderTypes.getValue() != null) {
             if (orderTypes.getValue().equals("date/time/provider")) {
@@ -144,6 +164,12 @@ public class ClinicManagerController {
         return null;
     }
 
+    /**
+     * Displays appointments sorted by the selected order type.
+     * Retrieves the sorting type using `sortingType()` and checks if there is a valid list of appointments to display.
+     * If valid, it calls `printList(sortType)` to output the sorted list;
+     * otherwise, displays an error message if the sorting type is missing.
+     */
     @FXML
     private void displayAppointments(){
         String sortType = sortingType();
@@ -155,6 +181,12 @@ public class ClinicManagerController {
         }
     }
 
+
+    /**
+     * Displays imaging appointments.
+     * Uses the sort type "PI" specifically for imaging appointments, checks the list of appointments,
+     * and calls `printList(sortType)` to display them if valid.
+     */
     @FXML
     private void displayImagingAppts(){
         String sortType = "PI";
@@ -163,6 +195,12 @@ public class ClinicManagerController {
         }
     }
 
+
+    /**
+     * Displays office appointments.
+     * Uses the sort type "PO" specifically for office appointments, checks the list of appointments,
+     * and calls `printList(sortType)` to display them if valid.
+     */
     @FXML
     private void displayOfficeAppts(){
         String sortType = "PO";
@@ -171,6 +209,11 @@ public class ClinicManagerController {
         }
     }
 
+    /**
+     * Displays billing statements.
+     * Uses the sort type "PS" specifically for billing statements, checks if a valid list exists,
+     * and calls `printList(sortType)` to display the statements if valid.
+     */
     @FXML
     private void displayBillingStatements(){
         String sortType = "PS";
@@ -179,14 +222,19 @@ public class ClinicManagerController {
         }
     }
 
+    /**
+     * Displays credit statements.
+     * Uses the sort type "PC" specifically for credit statements, checks if a valid list exists,
+     * and calls `printList(sortType)` to display the statements if valid.
+     */
     @FXML
     private void displayCreditStatements(){
         String sortType = "PC";
-        System.out.println(listAppointments.isEmpty());
         if(CheckList(sortType)){
             printList(sortType);
         }
     }
+
     /**
      * Prints the list of appointments based on the command.
      * @param type the command words
