@@ -55,6 +55,13 @@ public abstract class Provider extends Person {
     public void addToCredit() {
         creditTotal += rate();
     }
+
+    /**
+     * Returns the credit total of the provider back to 0.
+     */
+    public void emptyCredit() {
+        creditTotal = 0;
+    }
     /**
      * Returns the credit total of the provider.
      *

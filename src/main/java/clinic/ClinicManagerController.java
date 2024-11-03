@@ -5,26 +5,18 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
-import org.w3c.dom.Text;
 import util.Date;
 import util.List;
 import util.Sort;
 
-import java.awt.*;
-import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.time.LocalDate;
-import java.time.format.DateTimeParseException;
 import java.util.Calendar;
 import java.util.Iterator;
 import java.util.Scanner;
-
-import java.time.format.DateTimeFormatter;
 
 public class ClinicManagerController {
 
@@ -48,7 +40,7 @@ public class ClinicManagerController {
     private TableColumn<Location, String> countyColumn, cityColumn, zipColumn;
 
     @FXML
-    private Button loadProvidersButton, clear, schedule, cancel, reschedule;
+    private Button loadProvidersButton;
 
     @FXML
     private TextArea textArea;
@@ -93,11 +85,11 @@ public class ClinicManagerController {
         initializeTimeslot(newTimeslot);
         initializeImageTypes();
         initializeListOrders();
-        listAppointments = new List<Appointment>();
-        listProviders = new List<Provider>();
-        technicians = new List<Technician>();
-        npis = new List<String>();
-        medicalRecord = new List<Patient>();
+        listAppointments = new List<>();
+        listProviders = new List<>();
+        technicians = new List<>();
+        npis = new List<>();
+        medicalRecord = new List<>();
         group = new ToggleGroup();
         officeVisitRadio.setToggleGroup(group);
         imagingServiceRadio.setToggleGroup(group);
@@ -291,6 +283,9 @@ public class ClinicManagerController {
             textArea.appendText("("+ (i + 1) + ") " + medicalRecord.get(i).toString());
             textArea.appendText("\n");
         }
+        while(!medicalRecord.isEmpty()) {
+            medicalRecord.remove(medicalRecord.get(0));
+        }
     }
 
     /**
@@ -306,7 +301,7 @@ public class ClinicManagerController {
      * Adds the credit amounts to each of the doctors.
      */
     private void creditAmounts(){
-        List<Provider> providers = new List<>();
+        List <Provider> providers = new List<>();
         for(int i = 0; i < listAppointments.size(); i++) {
             Provider p = (Provider) listAppointments.get(i).getProvider();
             if(providers.contains(p)) {
@@ -322,6 +317,7 @@ public class ClinicManagerController {
         for(int i = 0; i < providers.size(); i++) {
             textArea.appendText("("+(i + 1)+") " + providers.get(i).getProfile().getFname() + " " + providers.get(i).getProfile().getLname() + " " + providers.get(i).getProfile().getDob().toString()+" [credit amount: $" + providers.get(i).getCredit() + ".00]");
             textArea.appendText("\n");
+            providers.get(i).emptyCredit();
         }
     }
 
@@ -356,7 +352,11 @@ public class ClinicManagerController {
      * @return true if the list of appointments is not empty, false otherwise
      */
     private boolean CheckList(String commandWords) {
-        if(commandWords.equals("PS") || commandWords.equals("PP") || commandWords.equals("PL") || commandWords.equals("PA") || commandWords.equals("PC") || commandWords.equals("PI") || commandWords.equals("PO")) {
+        if(commandWords.equals("PS") && medicalRecord.isEmpty() && listAppointments.isEmpty()){
+            textArea.setText("Schedule calendar is empty.");
+            return false;
+        }
+        if( commandWords.equals("PP") || commandWords.equals("PL") || commandWords.equals("PA") || commandWords.equals("PC") || commandWords.equals("PI") || commandWords.equals("PO")) {
             if(listAppointments.isEmpty()) {
                 textArea.setText("Schedule calendar is empty.");
                 return false;
@@ -559,8 +559,8 @@ public class ClinicManagerController {
 
             command += date +",";
             command += times(ogTimeslot) + ",";
-            command += patientFirstName.getText() + ",";
-            command += patientFieldLastName.getText() + ",";
+            command += patientFirstName.getText().trim() + ",";
+            command += patientFieldLastName.getText().trim() + ",";
             command += dob + ",";
             command += times(newTimeslot);
 
@@ -643,8 +643,6 @@ public class ClinicManagerController {
     @FXML
     private void CreateAppointment() {
         arg = true;
-
-
         if(appointmentDateField.getEditor().getText().matches(".*[a-zA-Z\\s].*") || patientDob.getEditor().getText().matches(".*[a-zA-Z\\s].*")) {
             textArea.setText("Make sure to input valid dates in the date fields");
             arg = false;
@@ -653,7 +651,6 @@ public class ClinicManagerController {
         if(appointmentDateField.getEditor().getText().length() == 0 || patientFieldFirstName.getText().trim().length() == 0 || patientFieldLastName.getText().trim().length() == 0 || patientDob.getEditor().getText().length() == 0 || timeslotCombo.getValue() == null || providersCombo == null || imagingType == null) {
             textArea.setText("Error: Make sure to provide inputs to all fields");
             arg = false;
-            return;
         }
         else {
 
@@ -671,8 +668,8 @@ public class ClinicManagerController {
 
             command += dateGiven +",";
             command += times(timeslotCombo) + ",";
-            command += patientFieldFirstName.getText() + ",";
-            command += patientFieldLastName.getText() + ",";
+            command += patientFieldFirstName.getText().trim() + ",";
+            command += patientFieldLastName.getText().trim() + ",";
             command += dobGiven + ",";
             if(officeVisitRadio.isSelected()) {
                 command += providerId();
