@@ -1,0 +1,1 @@
+packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"m":"clinic","l":"clinic"},{"m":"clinic","l":"util"}];updateSearchResults();

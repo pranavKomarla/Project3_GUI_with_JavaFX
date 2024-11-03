@@ -11,6 +11,10 @@ public enum Radiology {
 
 
 
+    /**
+     * returns the room name
+     * @author Pranav Komarla
+     */
     private String getRoom() {
         return this.name();
     }
