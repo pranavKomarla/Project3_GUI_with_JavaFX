@@ -304,7 +304,7 @@ public class ClinicManagerController {
             arg = false;
             return;
         }
-        if(appointmentDateField1.getEditor().getText() == null || patientFirstName.getText() == null || patientLastName.getText() == null || patientDob1.getEditor().getText() == null || ogTimeslot.getValue() == null || newTimeslot.getValue() == null) {
+        if(appointmentDateField1.getEditor().getText().length() == 0 || patientFirstName.getText().trim().length() == 0 || patientLastName.getText().trim().length() == 0 || patientDob1.getEditor().getText().length() == 0 || ogTimeslot.getValue() == null || newTimeslot.getValue() == null) {
             textArea.setText("Error: Make sure to provide inputs to all fields");
             arg = false;
         }
@@ -409,7 +409,7 @@ public class ClinicManagerController {
             arg = false;
             return;
         }
-        if(appointmentDateField.getEditor() == null || patientFieldFirstName.getText() == null || patientFieldLastName.getText() == null || patientDob.getEditor() == null || timeslotCombo.getValue() == null || providersCombo == null || imagingType == null) {
+        if(appointmentDateField.getEditor().getText().length() == 0 || patientFieldFirstName.getText().trim().length() == 0 || patientFieldLastName.getText().trim().length() == 0 || patientDob.getEditor().getText().length() == 0 || timeslotCombo.getValue() == null || providersCombo == null || imagingType == null) {
             textArea.setText("Error: Make sure to provide inputs to all fields");
             arg = false;
             return;
